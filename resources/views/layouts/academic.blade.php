@@ -24,7 +24,7 @@
         .btn-danger:hover { background:#fecaca; }
         .btn-sm { padding:4px 10px; font-size:12px; }
         table { width:100%; border-collapse:collapse; }
-        thead th { background:#f9fafb; padding:10px 14px; text-align:left; font-size:12px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #e5e7eb; }
+        thead th { background:#1e1b4b; padding:12px 16px; text-align:left; font-size:14px; font-weight:800; color:#e0e7ff; letter-spacing:.05em; border-bottom:3px solid #4f46e5; white-space:nowrap; }
         tbody td { padding:11px 14px; font-size:13px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
         tbody tr:hover { background:#fafafa; }
         .card { background:#fff; border-radius:10px; border:1px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,.06); }
@@ -49,12 +49,15 @@
         <nav style="flex:1; padding:12px 10px; display:flex; flex-direction:column; gap:2px;">
             @php
                 $navItems = [
-                    ['label'=>'Staff',     'icon'=>'👤', 'url'=>'/academic/staff'],
-                    ['label'=>'Terms',     'icon'=>'📅', 'url'=>'/academic/terms'],
-                    ['label'=>'Courses',   'icon'=>'📚', 'url'=>'/academic/courses'],
-                    ['label'=>'Rooms',     'icon'=>'🏫', 'url'=>'/academic/rooms'],
-                    ['label'=>'Timetable', 'icon'=>'🗓️', 'url'=>'/academic/timetable'],
-                    ['label'=>'Overview',  'icon'=>'📊', 'url'=>'/academic/overview'],
+                    ['label'=>'Departments', 'icon'=>'🏛️', 'url'=>'/academic/departments'],
+                    ['label'=>'Courses',     'icon'=>'🎓', 'url'=>'/academic/courses'],
+                    ['label'=>'Subjects',    'icon'=>'📖', 'url'=>'/academic/subjects'],
+                    ['label'=>'Semesters',   'icon'=>'📅', 'url'=>'/academic/semesters'],
+                    ['label'=>'Buildings',   'icon'=>'🏢', 'url'=>'/academic/buildings'],
+                    ['label'=>'Rooms',       'icon'=>'🏫', 'url'=>'/academic/rooms'],
+                    ['label'=>'Staff',       'icon'=>'👤', 'url'=>'/academic/staff'],
+                    ['label'=>'Timetable',   'icon'=>'🗓️', 'url'=>'/academic/timetable'],
+                    ['label'=>'Overview',    'icon'=>'📊', 'url'=>'/academic/overview'],
                 ];
                 $path = request()->getPathInfo();
             @endphp
