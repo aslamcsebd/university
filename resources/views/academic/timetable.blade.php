@@ -22,16 +22,6 @@ $slots = [
 $statusColor = ['Scheduled'=>'badge-blue','Cancelled'=>'badge-red','Completed'=>'badge-gray','Rescheduled'=>'badge-yellow'];
 @endphp
 
-{{-- Filters --}}
-<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-    <select class="form-select" style="width:190px;"><option>All Semesters</option><option>Sem 1 2025 – BCS</option><option>Sem 1 2025 – BMATH</option><option>Sem 1 2025 – BPHY</option><option>Sem 1 2025 – MDS</option></select>
-    <select class="form-select" style="width:160px;"><option>All Departments</option><option>Computer Science</option><option>Mathematics</option><option>Physics</option><option>Data Science</option></select>
-    <select class="form-select" style="width:170px;"><option>All Staff</option><option>Dr. Sarah Mitchell</option><option>Prof. James Okafor</option><option>Dr. Priya Nair</option><option>Dr. Amina Yusuf</option></select>
-    <select class="form-select" style="width:130px;"><option>All Days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
-    <select class="form-select" style="width:130px;"><option>All Statuses</option><option>Scheduled</option><option>Cancelled</option></select>
-    <input class="form-input" style="width:180px;" placeholder="Search subject / room…" type="text">
-</div>
-
 <div style="display:flex;gap:20px;align-items:flex-start;">
 
 {{-- Left Tips --}}
@@ -73,8 +63,17 @@ $statusColor = ['Scheduled'=>'badge-blue','Cancelled'=>'badge-red','Completed'=>
 
 {{-- Right Table --}}
 <div style="flex:1;">
-    <div style="padding:14px 20px; border-bottom:1px solid #e5e7eb;">
+<div class="card">
+    <div style="padding:16px 20px; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
         <span style="font-size:16px; font-weight:700; color:#1e1b4b;">{{ count($slots) }} Timetable Slots</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <select class="form-select" style="width:170px;"><option>All Semesters</option><option>Sem 1 2025 – BCS</option><option>Sem 1 2025 – BMATH</option><option>Sem 1 2025 – BPHY</option><option>Sem 1 2025 – MDS</option></select>
+            <select class="form-select" style="width:150px;"><option>All Departments</option><option>Computer Science</option><option>Mathematics</option><option>Physics</option><option>Data Science</option></select>
+            <select class="form-select" style="width:150px;"><option>All Staff</option><option>Dr. Sarah Mitchell</option><option>Prof. James Okafor</option><option>Dr. Priya Nair</option><option>Dr. Amina Yusuf</option></select>
+            <select class="form-select" style="width:120px;"><option>All Days</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+            <select class="form-select" style="width:120px;"><option>All Statuses</option><option>Scheduled</option><option>Cancelled</option></select>
+            <input class="form-input" style="width:180px;" placeholder="Search subject / room…" type="text">
+        </div>
     </div>
     <table>
         <thead>
@@ -124,8 +123,8 @@ $statusColor = ['Scheduled'=>'badge-blue','Cancelled'=>'badge-red','Completed'=>
             @endforeach
         </tbody>
     </table>
-    <div style="padding:12px 20px; border-top:1px solid #f3f4f6; font-size:16px; font-weight:700; color:#1e1b4b;">
-        Showing {{ count($slots) }} Slots
+    <div style="padding:12px 20px; border-top:1px solid #f3f4f6; font-size:12px; color:#6b7280;">
+        Showing {{ count($slots) }} slots
     </div>
 </div>{{-- end card --}}
 </div>{{-- end right --}}

@@ -1,58 +1,273 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Academic Timetable Module
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> A **Laravel 13** web application for managing the full academic scheduling lifecycle —
+> departments, courses, subjects, semesters, buildings, rooms, staff and timetable slots.
+> Built with a clean sidebar-driven UI, Breeze auth, and a live overview dashboard.
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+URL:      http://127.0.0.1:8000
+Email:    admin@gmail.com
+Password: 123456789
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## ⚡ Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Layer      | Technology                          |
+|------------|-------------------------------------|
+| Backend    | PHP 8.5 · Laravel 13.8              |
+| Auth       | Laravel Breeze 2.4 (Blade stack)    |
+| Frontend   | Blade · Tailwind CSS v4 · Alpine.js |
+| Build      | Vite 8                              |
+| Database   | MySQL                               |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🗂️ Navigation Tree
 
-## Security Vulnerabilities
+```
+🖥️  SIDEBAR NAVIGATION
+│
+├── 🎓  ACADEMY DASHBOARD  (/academic/*)
+│   ├── 🏛️  Departments          /academic/departments
+│   ├── 🎓  Courses              /academic/courses
+│   ├── 📖  Subjects             /academic/subjects
+│   ├── 📅  Semesters            /academic/semesters
+│   ├── 🏢  Buildings            /academic/buildings
+│   ├── 🏫  Rooms                /academic/rooms
+│   ├── 👤  Staff                /academic/staff
+│   ├── 🗓️  Timetable            /academic/timetable
+│   ├── 📊  Overview             /academic/overview
+│   └── 🌳  Nav Tree             /academic/tree
+│
+├── 🧑🎓  STUDENT PANEL  (/student/*)
+│   ├── 🏠  Dashboard            /student/dashboard
+│   ├── 📆  Class Schedules      /student/class-schedules
+│   ├── 📝  Exam Schedules       /student/exam-schedules
+│   ├── ✅  Attendances          /student/attendances
+│   ├── 🏖️  Apply Leaves         /student/apply-leaves
+│   ├── 💳  Fees Reports         /student/fees-reports
+│   ├── 📚  Library              /student/library
+│   ├── 📢  Notices              /student/notices
+│   ├── 📋  Assignments          /student/assignments
+│   ├── ⬇️  Downloads            /student/downloads
+│   ├── 🎖️  Transcript           /student/transcript
+│   └── 👤  My Profile           /student/my-profile
+│
+└── 🗂️  ADVANCED NAVIGATION  (expandable inline)
+    ├── 🏠  Dashboard
+    ├── 📋  Admission  (8)
+    │   ├── Applications
+    │   ├── New Registration
+    │   ├── Student List
+    │   ├── Transfers  (2)
+    │   │   ├── Transfer In
+    │   │   └── Transfer Out
+    │   ├── Status Types
+    │   ├── ID Cards
+    │   └── Settings  (1)
+    │       └── ID Card Setting
+    ├── 🧑🎓  Students  (9)
+    │   ├── Attendances  (2)
+    │   │   ├── Subject Attendances
+    │   │   └── Attendance Reports
+    │   ├── Manage Leave
+    │   ├── Student Notes
+    │   ├── Enrollments  (4)
+    │   │   ├── Single Enroll
+    │   │   ├── Group Enrolls
+    │   │   ├── Course Add Drop
+    │   │   └── Course Graduation
+    │   └── Alumni List
+    ├── 🏛️  Academic  (9)
+    │   ├── Faculties
+    │   ├── Programs
+    │   ├── Batches
+    │   ├── Sessions
+    │   ├── Semesters
+    │   ├── Sections
+    │   ├── Class Rooms
+    │   ├── Courses
+    │   └── Enroll Courses
+    ├── 📆  Routines  (7)
+    │   ├── Manage Classes
+    │   ├── Class Schedules
+    │   ├── Manage Exams
+    │   ├── Exam Schedules
+    │   ├── Teacher Routines
+    │   └── Settings  (2)
+    │       ├── Class Schedule
+    │       └── Exam Schedule
+    ├── 📝  Examinations  (10)
+    │   ├── Exam Attendances
+    │   ├── Exam Mark Ledger
+    │   ├── Exam Results
+    │   ├── Course Mark Ledger
+    │   ├── Course Results
+    │   ├── Grading Systems
+    │   ├── Exam Types
+    │   ├── Admit Cards
+    │   └── Settings  (2)
+    │       ├── Admit Setting
+    │       └── Mark Distribution
+    ├── 📚  Study Materials  (3)
+    │   ├── Assignments
+    │   ├── Content List
+    │   └── Content Types
+    ├── 💳  Fees Collection  (11)
+    │   ├── Student Fees  (4)
+    │   │   ├── Fees Due
+    │   │   ├── Quick Assign
+    │   │   ├── Quick Received
+    │   │   └── Fees Reports
+    │   ├── Assign Group Fees
+    │   ├── Assigned History
+    │   ├── Fees Types
+    │   ├── Fees Discounts
+    │   ├── Fees Fines
+    │   └── Settings  (1)
+    │       └── Receipt Setting
+    ├── 👥  Human Resources  (9)
+    │   ├── Staff List
+    │   ├── Staff Notes
+    │   ├── Payrolls
+    │   ├── Payroll Reports
+    │   ├── Work Shift Types
+    │   ├── Designations
+    │   ├── Departments
+    │   └── Settings  (2)
+    │       ├── Tax Settings
+    │       └── Pay Slip Setting
+    ├── ✅  Staff Attendances  (4)
+    │   ├── Daily Attendances
+    │   ├── Daily Reports
+    │   ├── Hourly Attendances
+    │   └── Hourly Reports
+    ├── 🏖️  Leave Manager  (4)
+    │   ├── Apply Leave
+    │   ├── My Leaves
+    │   ├── Leave Types
+    │   └── Manage Leave
+    ├── 💰  Accounts  (5)
+    │   ├── Income List
+    │   ├── Income Categories
+    │   ├── Expense List
+    │   ├── Expense Categories
+    │   └── Outcome Overview
+    ├── 📢  Communicates  (6)
+    │   ├── Send Email
+    │   ├── Send SMS
+    │   ├── Event List
+    │   ├── Calendar
+    │   ├── Notice List
+    │   └── Notice Categories
+    ├── 📖  Library  (10)
+    │   ├── Issue Book
+    │   ├── Issue & Return
+    │   ├── Members  (3)
+    │   │   ├── Student List
+    │   │   ├── Staff List
+    │   │   └── Outsider List
+    │   ├── Book List
+    │   ├── Book Requests
+    │   ├── Book Categories
+    │   └── Settings  (1)
+    │       └── Card Setting
+    ├── 📦  Inventory  (7)
+    │   ├── Issue Item
+    │   ├── Issue & Return
+    │   ├── Item Stocks
+    │   ├── Item List
+    │   ├── Stores
+    │   ├── Suppliers
+    │   └── Categories
+    ├── 🏠  Hostels  (6)
+    │   ├── Members  (2)
+    │   │   ├── Student List
+    │   │   └── Staff List
+    │   ├── Hostel Rooms
+    │   ├── Hostel List
+    │   └── Room Types
+    ├── 🚌  Transports  (4)
+    │   ├── Members  (2)
+    │   │   ├── Student List
+    │   │   └── Staff List
+    │   ├── Vehicles
+    │   └── Routes
+    ├── 🖥️  Front Desk  (14)
+    │   ├── Visitor Logs
+    │   ├── Phone Logs
+    │   ├── Enquiry List
+    │   ├── Complain List
+    │   ├── Postal Exchanges
+    │   ├── Meeting Schedules
+    │   └── Settings  (8)
+    │       ├── Visit Purposes
+    │       ├── Token Settings
+    │       ├── Enquiry Sources
+    │       ├── Enquiry References
+    │       ├── Complain Types
+    │       ├── Complain Sources
+    │       ├── Postal Types
+    │       └── Meeting Types
+    ├── 🎖️  Transcripts  (5)
+    │   ├── Semester Marksheets
+    │   ├── Total Marksheets
+    │   ├── Marksheet Setting
+    │   ├── Certificates
+    │   └── Certificate Templates
+    ├── 📊  Reports  (15)
+    │   ├── Student Progress
+    │   ├── Course Students
+    │   ├── Student Attendance
+    │   ├── Subject Attendance
+    │   ├── Collected Fees
+    │   ├── Student Fees
+    │   ├── Salary Paid
+    │   ├── Staff Leaves
+    │   ├── Total Income
+    │   ├── Total Expense
+    │   ├── Library History
+    │   ├── Book Return Due
+    │   ├── Inventory History
+    │   ├── Hostel Members
+    │   └── Transport Members
+    ├── 🌐  Front Web  (13)
+    │   ├── Contact Setting
+    │   ├── Social Setting
+    │   ├── Sliders
+    │   ├── About Us
+    │   ├── Features
+    │   ├── Courses
+    │   ├── Event
+    │   ├── News
+    │   ├── Faqs
+    │   ├── Gallery
+    │   ├── Testimonials
+    │   ├── Footer Pages
+    │   └── Call To Action
+    ├── ⚙️  Settings  (12)
+    │   ├── General
+    │   ├── States/Provinces
+    │   ├── Districts/Cities
+    │   ├── Languages
+    │   ├── Mail Setting
+    │   ├── SMS Getaways
+    │   ├── Payment Getaways
+    │   ├── Online Application
+    │   ├── Roles and Permissions
+    │   ├── Field Settings  (3)
+    │   │   ├── Staffs
+    │   │   ├── Students
+    │   │   └── Applications
+    │   └── Student Panel
+    └── 👤  My Profile
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Panel              | Top-level Groups | Total Items |
+|--------------------|:----------------:|:-----------:|
+| Academy Dashboard  | —                | 10          |
+| Student Panel      | —                | 12          |
+| Advanced Nav       | 22               | 147         |
+| **Grand Total**    |                  | **169**     |
