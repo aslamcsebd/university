@@ -50,5 +50,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/university', fn() => view('university'))->name('university');
+Route::get('/apply', fn() => view('apply'))->name('apply');
 
 require __DIR__.'/auth.php';
