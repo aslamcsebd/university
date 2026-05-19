@@ -12,39 +12,48 @@
 
         /* Sidebar */
         #adv-sidebar {
-            width: 260px; min-height: 100vh; background: #0f172a; color: #fff;
+            width: 260px; height: 100vh; background: #0f172a; color: #fff;
             display: flex; flex-direction: column; flex-shrink: 0;
             transition: width .25s ease;
-            overflow: hidden;
+            overflow-y: auto; overflow-x: hidden;
+            position: sticky; top: 0;
         }
+        #adv-sidebar::-webkit-scrollbar { width: 4px; }
+        #adv-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+        #adv-sidebar::-webkit-scrollbar-track { background: transparent; }
         #adv-sidebar.collapsed { width: 56px; }
 
         /* Logo bar */
         .adv-logo {
-            display: flex; align-items: center; gap: 10px;
-            padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,.08);
-            white-space: nowrap; overflow: hidden;
+            display: flex; align-items: center; gap: 12px;
+            padding: 18px 16px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+            white-space: nowrap; overflow: hidden; flex-shrink: 0;
+            position: sticky; top: 0; z-index: 10;
+            background: #0f172a;
         }
-        .adv-logo-icon { font-size: 20px; flex-shrink: 0; }
-        .adv-logo-text { font-size: 14px; font-weight: 800; color: #fff; }
-        .adv-logo-sub  { font-size: 10px; color: #94a3b8; letter-spacing: .06em; text-transform: uppercase; }
+        .adv-logo-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg,#4f46e5,#818cf8);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .adv-logo-text { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.2; }
+        .adv-logo-sub  { font-size: 10px; color: #64748b; letter-spacing: .04em; margin-top: 2px; }
 
         /* Toggle button */
         #sidebar-toggle {
-            position: absolute; top: 14px; left: 224px;
-            width: 28px; height: 28px; border-radius: 50%;
-            background: #4f46e5; border: none; color: #fff;
-            cursor: pointer; font-size: 14px; display: flex;
+            position: absolute; top: 18px; left: 224px;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: #1e293b; border: 1px solid rgba(255,255,255,.1); color: #94a3b8;
+            cursor: pointer; font-size: 12px; display: flex;
             align-items: center; justify-content: center;
-            transition: left .25s ease; z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+            transition: left .25s ease; z-index: 200;
         }
+        #sidebar-toggle:hover { background: #4f46e5; color: #fff; border-color: #4f46e5; }
         #sidebar-toggle.collapsed-btn { left: 40px; }
 
-        /* Nav scroll area */
-        .adv-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 0; }
-        .adv-nav::-webkit-scrollbar { width: 4px; }
-        .adv-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+        /* Nav scroll area — no longer scrolls independently, sidebar scrolls */
+        .adv-nav { flex: 1; overflow: visible; padding: 8px 0; }
 
         /* Top-level item (no children) */
         .adv-item {
@@ -118,17 +127,17 @@
         }
 
         /* Main content */
-        #adv-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #adv-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         #adv-topbar {
             background: #fff; border-bottom: 1px solid #e5e7eb;
             padding: 12px 24px; display: flex; align-items: center;
-            justify-content: space-between;
+            justify-content: space-between; flex-shrink: 0;
         }
         #adv-topbar h1 { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; }
-        #adv-content { flex: 1; padding: 24px; overflow-y: auto; background: #f1f5f9; }
+        #adv-content { flex: 1; padding: 24px; overflow-y: auto; background: #f1f5f9; min-height: 0; }
     </style>
 </head>
-<body style="display:flex; min-height:100vh; position:relative;">
+<body style="display:flex; height:100vh; overflow:hidden; position:relative;">
 
 {{-- Toggle button (outside sidebar so it stays visible) --}}
 <button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
@@ -136,10 +145,10 @@
 {{-- Sidebar --}}
 <aside id="adv-sidebar">
     <div class="adv-logo">
-        <span class="adv-logo-icon">🎓</span>
+        <div class="adv-logo-icon">🎓</div>
         <div>
             <div class="adv-logo-text">Academy</div>
-            <div class="adv-logo-sub">Admin Panel</div>
+            <div class="adv-logo-sub">Admin Dashboard</div>
         </div>
     </div>
 
@@ -447,11 +456,17 @@
     </nav>
 
     <div class="adv-footer">
-        <span>{{ Auth::user()->name ?? 'Guest' }}</span>
-        <a href="/academic/overview">← Academic</a>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">👤</div>
+            <div style="overflow:hidden;">
+                <div style="font-size:12px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ Auth::user()->name ?? 'Guest' }}</div>
+                <div style="font-size:10px;color:#475569;">Administrator</div>
+            </div>
+        </div>
+        <a href="/academic/overview" style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.05);color:#94a3b8;text-decoration:none;font-size:11px;margin-bottom:4px;">🏛️ Academic Overview</a>
         <form method="POST" action="/logout">
             @csrf
-            <button type="submit">Logout</button>
+            <button type="submit" style="width:100%;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;background:rgba(248,113,113,.1);color:#f87171;font-size:11px;cursor:pointer;border:none;text-align:left;">⬅ Logout</button>
         </form>
     </div>
 </aside>

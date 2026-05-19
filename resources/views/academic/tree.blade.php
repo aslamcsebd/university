@@ -314,6 +314,449 @@ foreach ($sections as $sec) {
 
 </div>
 
+{{-- ═══════════════════════════════════════════════════════════
+     SUPER TREE — Interactive Canvas Relationship Map
+═══════════════════════════════════════════════════════════ --}}
+<div style="margin-top:40px;">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="flex:1;height:2px;background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);"></div>
+        <span style="font-size:18px;font-weight:800;color:#1e1b4b;white-space:nowrap;">🕸️ Super Relationship Tree</span>
+        <div style="flex:1;height:2px;background:linear-gradient(90deg,#ec4899,#8b5cf6,#6366f1);"></div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:#9ca3af;margin:0 0 16px;">Drag nodes · Hover to highlight connections · Click to pin/unpin</p>
+
+    <div style="background:#0f0c29;border-radius:16px;border:1px solid rgba(99,102,241,.3);overflow:hidden;position:relative;">
+        {{-- toolbar --}}
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.07);">
+            <button onclick="stReset()" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(99,102,241,.25);color:#a5b4fc;border:1px solid rgba(99,102,241,.4);cursor:pointer;">⟳ Reset</button>
+            <button onclick="stFitAll()" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(99,102,241,.25);color:#a5b4fc;border:1px solid rgba(99,102,241,.4);cursor:pointer;">⊡ Fit</button>
+            <button onclick="stToggleLabels()" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(99,102,241,.25);color:#a5b4fc;border:1px solid rgba(99,102,241,.4);cursor:pointer;">🏷 Labels</button>
+            <div style="flex:1;"></div>
+            {{-- legend --}}
+            <span style="font-size:10px;color:#6366f1;font-weight:700;">● Academic</span>
+            <span style="font-size:10px;color:#10b981;font-weight:700;">● Student</span>
+            <span style="font-size:10px;color:#f59e0b;font-weight:700;">● Advanced</span>
+            <span style="font-size:10px;color:#ec4899;font-weight:700;">● Shared</span>
+        </div>
+        <canvas id="superTreeCanvas" style="display:block;width:100%;cursor:grab;"></canvas>
+    </div>
+
+    {{-- tooltip --}}
+    <div id="stTooltip" style="position:fixed;display:none;background:#1e1b4b;color:#e0e7ff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid rgba(99,102,241,.5);pointer-events:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);"></div>
+</div>
+
+<script>
+// ─── Super Tree Engine ───────────────────────────────────────
+(function(){
+'use strict';
+const C = document.getElementById('superTreeCanvas');
+const TT = document.getElementById('stTooltip');
+const ctx = C.getContext('2d');
+
+// ── Node definitions ────────────────────────────────────────
+// type: 'root'|'module'|'shared'
+// color: node fill
+// links: array of node ids this connects TO
+const RAW_NODES = [
+  // ── SYSTEM ROOT
+  {id:'root',      label:'🎓 Academy System', icon:'🎓', type:'root',   color:'#fff',    textColor:'#1e1b4b', size:36},
+
+  // ── ACADEMIC DASHBOARD modules
+  {id:'dept',      label:'Departments',    icon:'🏛️', type:'acad',   color:'#6366f1', size:22},
+  {id:'courses',   label:'Courses',        icon:'🎓', type:'acad',   color:'#6366f1', size:22},
+  {id:'subjects',  label:'Subjects',       icon:'📖', type:'acad',   color:'#6366f1', size:22},
+  {id:'semesters', label:'Semesters',      icon:'📅', type:'acad',   color:'#6366f1', size:22},
+  {id:'buildings', label:'Buildings',      icon:'🏢', type:'acad',   color:'#6366f1', size:20},
+  {id:'rooms',     label:'Rooms',          icon:'🏫', type:'acad',   color:'#6366f1', size:20},
+  {id:'staff',     label:'Staff',          icon:'👤', type:'acad',   color:'#6366f1', size:22},
+  {id:'timetable', label:'Timetable',      icon:'🗓️', type:'acad',   color:'#6366f1', size:24},
+
+  // ── STUDENT PANEL modules
+  {id:'sp_dash',   label:'Student Dashboard', icon:'🏠', type:'stud', color:'#10b981', size:22},
+  {id:'sp_cls',    label:'Class Schedules',   icon:'📆', type:'stud', color:'#10b981', size:20},
+  {id:'sp_exam',   label:'Exam Schedules',    icon:'📝', type:'stud', color:'#10b981', size:20},
+  {id:'sp_att',    label:'Attendances',       icon:'✅', type:'stud', color:'#10b981', size:20},
+  {id:'sp_fees',   label:'Fees Reports',      icon:'💳', type:'stud', color:'#10b981', size:20},
+  {id:'sp_lib',    label:'Library',           icon:'📚', type:'stud', color:'#10b981', size:20},
+  {id:'sp_trans',  label:'Transcript',        icon:'🏅', type:'stud', color:'#10b981', size:20},
+
+  // ── ADVANCED NAV modules
+  {id:'admission', label:'Admission',       icon:'📋', type:'adv',   color:'#f59e0b', size:24},
+  {id:'students',  label:'Students',        icon:'👨🎓',type:'adv',   color:'#f59e0b', size:24},
+  {id:'routines',  label:'Routines',        icon:'📆', type:'adv',   color:'#f59e0b', size:22},
+  {id:'exams',     label:'Examinations',    icon:'📝', type:'adv',   color:'#f59e0b', size:22},
+  {id:'fees',      label:'Fees Collection', icon:'💳', type:'adv',   color:'#f59e0b', size:22},
+  {id:'hr',        label:'Human Resources', icon:'👥', type:'adv',   color:'#f59e0b', size:22},
+  {id:'library',   label:'Library Mgmt',   icon:'📖', type:'adv',   color:'#f59e0b', size:22},
+  {id:'inventory', label:'Inventory',       icon:'📦', type:'adv',   color:'#f59e0b', size:20},
+  {id:'hostels',   label:'Hostels',         icon:'🏠', type:'adv',   color:'#f59e0b', size:20},
+  {id:'transport', label:'Transports',      icon:'🚌', type:'adv',   color:'#f59e0b', size:20},
+  {id:'frontdesk', label:'Front Desk',      icon:'🖥', type:'adv',   color:'#f59e0b', size:20},
+  {id:'reports',   label:'Reports',         icon:'📊', type:'adv',   color:'#f59e0b', size:24},
+  {id:'communicate',label:'Communicate',    icon:'📢', type:'adv',   color:'#f59e0b', size:20},
+  {id:'settings',  label:'Settings',        icon:'⚙️', type:'adv',   color:'#f59e0b', size:22},
+  {id:'transcripts',label:'Transcripts',    icon:'🏅', type:'adv',   color:'#f59e0b', size:20},
+
+  // ── SHARED / CROSS-SECTION nodes
+  {id:'x_student', label:'Student (shared)', icon:'👨🎓',type:'shared', color:'#ec4899', size:26},
+  {id:'x_staff',   label:'Staff (shared)',   icon:'👥', type:'shared', color:'#ec4899', size:26},
+  {id:'x_finance', label:'Finance (shared)', icon:'💰', type:'shared', color:'#ec4899', size:26},
+];
+
+const EDGES = [
+  // root → section hubs
+  ['root','dept'],['root','courses'],['root','staff'],['root','timetable'],
+  ['root','sp_dash'],['root','admission'],['root','settings'],['root','reports'],
+
+  // Academic internal
+  ['dept','courses'],['courses','subjects'],['subjects','semesters'],
+  ['buildings','rooms'],['rooms','timetable'],['timetable','courses'],
+  ['staff','timetable'],
+
+  // Student panel internal
+  ['sp_dash','sp_cls'],['sp_dash','sp_exam'],['sp_dash','sp_att'],
+  ['sp_dash','sp_fees'],['sp_dash','sp_lib'],['sp_dash','sp_trans'],
+
+  // Advanced internal
+  ['admission','students'],['students','routines'],['routines','exams'],
+  ['exams','transcripts'],['transcripts','reports'],
+  ['fees','reports'],['hr','reports'],
+  ['library','inventory'],['hostels','transport'],
+  ['frontdesk','communicate'],['settings','admission'],
+
+  // Cross-section via shared nodes
+  ['x_student','sp_dash'],['x_student','admission'],['x_student','students'],
+  ['x_student','sp_att'],['x_student','sp_fees'],['x_student','sp_trans'],
+  ['x_staff','staff'],['x_staff','hr'],['x_staff','timetable'],
+  ['x_finance','fees'],['x_finance','sp_fees'],['x_finance','reports'],
+
+  // Timetable ↔ Routines
+  ['timetable','routines'],['sp_cls','routines'],['sp_exam','exams'],
+
+  // Library cross
+  ['sp_lib','library'],
+
+  // Staff cross
+  ['staff','hr'],
+];
+
+// ── Build node map ───────────────────────────────────────────
+const nodeMap = {};
+RAW_NODES.forEach(n => { nodeMap[n.id] = n; });
+
+// ── Layout: place nodes in rings ────────────────────────────
+function layoutNodes(W, H) {
+  const cx = W/2, cy = H/2;
+  // root at center
+  nodeMap['root'].x = cx; nodeMap['root'].y = cy;
+
+  const rings = [
+    { ids:['dept','courses','subjects','semesters','buildings','rooms','staff','timetable'], r:160, startAngle:-Math.PI/2 },
+    { ids:['sp_dash','sp_cls','sp_exam','sp_att','sp_fees','sp_lib','sp_trans'], r:260, startAngle: Math.PI/6 },
+    { ids:['admission','students','routines','exams','fees','hr','library','inventory','hostels','transport','frontdesk','reports','communicate','settings','transcripts'], r:370, startAngle:-Math.PI/2 },
+    { ids:['x_student','x_staff','x_finance'], r:480, startAngle: Math.PI/4 },
+  ];
+  rings.forEach(ring => {
+    ring.ids.forEach((id, i) => {
+      const angle = ring.startAngle + (2*Math.PI/ring.ids.length)*i;
+      nodeMap[id].x = cx + ring.r * Math.cos(angle);
+      nodeMap[id].y = cy + ring.r * Math.sin(angle);
+    });
+  });
+}
+
+// ── State ────────────────────────────────────────────────────
+let nodes = [], edges = [], scale = 1, offsetX = 0, offsetY = 0;
+let dragging = null, dragOffX = 0, dragOffY = 0;
+let hoverId = null, pinnedId = null;
+let showLabels = true;
+let animFrame = 0;
+
+function init() {
+  resize();
+  nodes = RAW_NODES.map(n => ({...n}));
+  nodes.forEach(n => { nodeMap[n.id] = n; });
+  layoutNodes(C.width, C.height);
+  edges = EDGES.map(([a,b]) => ({from:a, to:b}));
+  draw();
+}
+
+function resize() {
+  const rect = C.parentElement.getBoundingClientRect();
+  C.width  = rect.width  || 900;
+  C.height = Math.max(560, rect.width * 0.55);
+  C.style.height = C.height + 'px';
+}
+
+// ── Draw ─────────────────────────────────────────────────────
+function draw() {
+  const W = C.width, H = C.height;
+  ctx.clearRect(0,0,W,H);
+
+  // background grid
+  ctx.save();
+  ctx.strokeStyle = 'rgba(99,102,241,.06)';
+  ctx.lineWidth = 1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+
+  const activeId = pinnedId || hoverId;
+  const connectedIds = new Set();
+  if (activeId) {
+    edges.forEach(e => {
+      if (e.from===activeId||e.to===activeId) {
+        connectedIds.add(e.from); connectedIds.add(e.to);
+      }
+    });
+  }
+
+  // draw edges
+  edges.forEach(e => {
+    const a = nodeMap[e.from], b = nodeMap[e.to];
+    if (!a||!b) return;
+    const isActive = activeId && (e.from===activeId||e.to===activeId);
+    const isFaded  = activeId && !isActive;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    // bezier curve
+    const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    const dx = b.y-a.y, dy = a.x-b.x;
+    const len = Math.sqrt(dx*dx+dy*dy)||1;
+    const bend = 0.15;
+    ctx.quadraticCurveTo(mx+dx*bend, my+dy*bend, b.x, b.y);
+    if (isActive) {
+      ctx.strokeStyle = '#a5b4fc';
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 1;
+    } else if (isFaded) {
+      ctx.strokeStyle = 'rgba(99,102,241,.08)';
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.strokeStyle = 'rgba(99,102,241,.22)';
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 1;
+    }
+    ctx.stroke();
+
+    // arrowhead on active edges
+    if (isActive) {
+      const angle = Math.atan2(b.y-a.y, b.x-a.x);
+      const ar = b.size + 4;
+      const tx = b.x - ar*Math.cos(angle), ty = b.y - ar*Math.sin(angle);
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx - 8*Math.cos(angle-0.4), ty - 8*Math.sin(angle-0.4));
+      ctx.lineTo(tx - 8*Math.cos(angle+0.4), ty - 8*Math.sin(angle+0.4));
+      ctx.closePath();
+      ctx.fillStyle = '#a5b4fc';
+      ctx.fill();
+    }
+  });
+
+  // draw nodes
+  nodes.forEach(n => {
+    const isActive = n.id === activeId;
+    const isConn   = connectedIds.has(n.id);
+    const isFaded  = activeId && !isActive && !isConn;
+    const r = n.size;
+
+    ctx.globalAlpha = isFaded ? 0.25 : 1;
+
+    // glow on active
+    if (isActive) {
+      ctx.shadowColor = n.color;
+      ctx.shadowBlur  = 20;
+    } else if (isConn) {
+      ctx.shadowColor = n.color;
+      ctx.shadowBlur  = 8;
+    } else {
+      ctx.shadowBlur = 0;
+    }
+
+    // node circle
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, r, 0, Math.PI*2);
+    if (n.type==='root') {
+      const g = ctx.createRadialGradient(n.x-r*.3,n.y-r*.3,r*.1,n.x,n.y,r);
+      g.addColorStop(0,'#fff'); g.addColorStop(1,'#e0e7ff');
+      ctx.fillStyle = g;
+    } else {
+      const g = ctx.createRadialGradient(n.x-r*.3,n.y-r*.3,r*.1,n.x,n.y,r);
+      g.addColorStop(0, lighten(n.color, 40));
+      g.addColorStop(1, n.color);
+      ctx.fillStyle = g;
+    }
+    ctx.fill();
+
+    // border
+    ctx.strokeStyle = isActive ? '#fff' : (isConn ? '#e0e7ff' : 'rgba(255,255,255,.2)');
+    ctx.lineWidth   = isActive ? 2.5 : 1;
+    ctx.stroke();
+    ctx.shadowBlur  = 0;
+
+    // icon
+    ctx.font = `${Math.round(r*.9)}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.globalAlpha = isFaded ? 0.25 : 1;
+    ctx.fillText(n.icon||'', n.x, n.y);
+
+    // label
+    if (showLabels || isActive || isConn) {
+      ctx.font = `${isActive?700:600} ${isActive?12:10}px ui-sans-serif,system-ui,sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = isActive ? '#fff' : (isFaded ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.75)');
+      ctx.fillText(n.label, n.x, n.y + r + 4);
+    }
+
+    // pinned ring
+    if (n.id === pinnedId) {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r+5, 0, Math.PI*2);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4,3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.globalAlpha = 1;
+  });
+
+  ctx.restore();
+}
+
+function lighten(hex, amt) {
+  const n = parseInt(hex.slice(1),16);
+  const r = Math.min(255,((n>>16)&0xff)+amt);
+  const g = Math.min(255,((n>>8)&0xff)+amt);
+  const b = Math.min(255,(n&0xff)+amt);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ── World ↔ Screen coords ────────────────────────────────────
+function toWorld(ex, ey) {
+  const rect = C.getBoundingClientRect();
+  return {
+    x: (ex - rect.left - offsetX) / scale,
+    y: (ey - rect.top  - offsetY) / scale,
+  };
+}
+
+function hitNode(wx, wy) {
+  for (let i = nodes.length-1; i>=0; i--) {
+    const n = nodes[i];
+    const dx = wx-n.x, dy = wy-n.y;
+    if (dx*dx+dy*dy <= (n.size+4)*(n.size+4)) return n;
+  }
+  return null;
+}
+
+// ── Mouse events ─────────────────────────────────────────────
+C.addEventListener('mousedown', e => {
+  const w = toWorld(e.clientX, e.clientY);
+  const n = hitNode(w.x, w.y);
+  if (n) {
+    dragging = n;
+    dragOffX = w.x - n.x;
+    dragOffY = w.y - n.y;
+    C.style.cursor = 'grabbing';
+  }
+});
+
+C.addEventListener('mousemove', e => {
+  const w = toWorld(e.clientX, e.clientY);
+  if (dragging) {
+    dragging.x = w.x - dragOffX;
+    dragging.y = w.y - dragOffY;
+    draw();
+    return;
+  }
+  const n = hitNode(w.x, w.y);
+  const newHover = n ? n.id : null;
+  if (newHover !== hoverId) {
+    hoverId = newHover;
+    draw();
+  }
+  if (n) {
+    TT.style.display = 'block';
+    TT.style.left = (e.clientX+14)+'px';
+    TT.style.top  = (e.clientY-10)+'px';
+    TT.textContent = n.label + (n.type==='shared'?' ⟷ cross-section':'');
+    C.style.cursor = 'pointer';
+  } else {
+    TT.style.display = 'none';
+    C.style.cursor = 'grab';
+  }
+});
+
+C.addEventListener('mouseup', e => {
+  if (dragging) {
+    const w = toWorld(e.clientX, e.clientY);
+    const moved = Math.abs(w.x-dragging.x-dragOffX)+Math.abs(w.y-dragging.y-dragOffY) < 4;
+    if (moved) {
+      pinnedId = (pinnedId===dragging.id) ? null : dragging.id;
+      draw();
+    }
+    dragging = null;
+    C.style.cursor = 'grab';
+  }
+});
+
+C.addEventListener('mouseleave', () => {
+  dragging = null; hoverId = null;
+  TT.style.display = 'none';
+  draw();
+});
+
+// wheel zoom
+C.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = C.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  offsetX = mx - (mx - offsetX)*delta;
+  offsetY = my - (my - offsetY)*delta;
+  scale *= delta;
+  scale = Math.max(0.3, Math.min(3, scale));
+  draw();
+}, {passive:false});
+
+// ── Public controls ──────────────────────────────────────────
+window.stReset = function() {
+  scale=1; offsetX=0; offsetY=0; pinnedId=null; hoverId=null;
+  nodes.forEach(n => { const orig = RAW_NODES.find(r=>r.id===n.id); if(orig){n.x=orig.x;n.y=orig.y;} });
+  layoutNodes(C.width, C.height);
+  draw();
+};
+window.stFitAll = function() {
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  nodes.forEach(n=>{minX=Math.min(minX,n.x-n.size);maxX=Math.max(maxX,n.x+n.size);minY=Math.min(minY,n.y-n.size);maxY=Math.max(maxY,n.y+n.size);});
+  const pad=40, W=C.width, H=C.height;
+  const sx=(W-pad*2)/(maxX-minX), sy=(H-pad*2)/(maxY-minY);
+  scale=Math.min(sx,sy,2);
+  offsetX=pad-minX*scale; offsetY=pad-minY*scale;
+  draw();
+};
+window.stToggleLabels = function() { showLabels=!showLabels; draw(); };
+
+// ── Init ─────────────────────────────────────────────────────
+window.addEventListener('resize', ()=>{ resize(); layoutNodes(C.width,C.height); draw(); });
+init();
+setTimeout(stFitAll, 80);
+
+})();
+// ─────────────────────────────────────────────────────────────
+</script>
+
 <script>
 function toggleSec(bodyId, arrId) {
     const body = document.getElementById(bodyId);

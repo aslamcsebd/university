@@ -39,7 +39,7 @@
         .nc { display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:18px;padding:0 5px;border-radius:9px;font-size:10px;font-weight:700;background:rgba(99,102,241,.35);color:#c7d2fe;flex-shrink:0; }
     </style>
 </head>
-<body style="background:#f1f5f9; min-height:100vh;">
+<body style="background:#f1f5f9; height:100vh; overflow:hidden;">
 
 @php
 $path = request()->getPathInfo();
@@ -94,7 +94,7 @@ $mergedNav = [
         ],
     ],
     [
-        'label'=>'Students',     'icon'=>'🧑🎓',
+        'label'=>'Students',     'icon'=>'👨‍🎓',
         'sub' => [
             ['sep'=>true,'label'=>'Admission'],
             ['label'=>'Applications',      'url'=>'/admission/applications'],
@@ -224,7 +224,7 @@ $mergedNav = [
         ],
     ],
     [
-        'label'=>'Front Desk',   'icon'=>'🖥️',
+        'label'=>'Front Desk',   'icon'=>'🖥',
         'sub' => [
             ['label'=>'Visitor Logs',       'url'=>'/frontdesk/visitor-logs'],
             ['label'=>'Phone Logs',         'url'=>'/frontdesk/phone-logs'],
@@ -256,7 +256,7 @@ $mergedNav = [
         ],
     ],
     [
-        'label'=>'Transcripts',  'icon'=>'🎖️',
+        'label'=>'Transcripts',  'icon'=>'🏅',
         'sub' => [
             ['label'=>'Semester Marksheets','url'=>'/transcripts/semester-marksheets'],
             ['label'=>'Total Marksheets',   'url'=>'/transcripts/total-marksheets'],
@@ -343,8 +343,8 @@ foreach ($mergedNav as $g) {
 }
 @endphp
 
-<div style="display:flex; min-height:100vh;">
-    <aside style="width:260px; background:#1e1b4b; color:#fff; display:flex; flex-direction:column; flex-shrink:0;">
+<div style="display:flex; height:100vh; overflow:hidden;">
+    <aside style="width:260px; height:100vh; background:linear-gradient(180deg,#0f0c29 0%,#1e1b4b 40%,#1a1040 100%); color:#fff; display:flex; flex-direction:column; flex-shrink:0; box-shadow:3px 0 16px rgba(0,0,0,.35); overflow:hidden;">
         <div style="padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.1);">
             <div style="font-size:16px; font-weight:800; color:#fff; letter-spacing:.01em;">🎓 Academy</div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px;">
@@ -352,7 +352,7 @@ foreach ($mergedNav as $g) {
                 <span style="font-size:10px;font-weight:700;background:rgba(99,102,241,.4);color:#c7d2fe;padding:2px 7px;border-radius:9px;">{{ $totalPages }} pages</span>
             </div>
         </div>
-        <nav style="flex:1; padding:8px 8px; overflow-y:auto;">
+        <nav style="flex:1; min-height:0; padding:8px 8px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent;">
             <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#6366f1;text-transform:uppercase;padding:6px 10px 4px;">Academic Dashboard</div>
 
             @php $ovActive = str_starts_with($path, '/academic/overview'); @endphp
@@ -394,13 +394,17 @@ foreach ($mergedNav as $g) {
                     <div id="nm{{ $mi }}" style="{{ $mActive ? '' : 'display:none;' }}padding-left:10px;margin-top:1px;">
                         @foreach($m['sub'] as $s)
                             @if(isset($s['sep']))
-                                <div style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#475569;text-transform:uppercase;padding:6px 8px 2px;">{{ $s['label'] }}</div>
+                                <div style="display:flex;align-items:center;gap:6px;margin:8px 4px 4px;">
+                                    <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(99,102,241,.5),transparent);"></div>
+                                    <span style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#818cf8;text-transform:uppercase;white-space:nowrap;">{{ $s['label'] }}</span>
+                                    <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.5));"></div>
+                                </div>
                             @else
                                 @php $sActive = $s['url'] !== '#' && str_starts_with($path, $s['url']); @endphp
-                                <a href="{{ $s['url'] }}" style="display:block;padding:6px 8px;border-radius:5px;font-size:13px;text-decoration:none;
-                                    {{ $sActive ? 'color:#a5b4fc;font-weight:600;background:rgba(99,102,241,.15);' : 'color:#64748b;' }}"
-                                   onmouseover="{{ $sActive ? '' : "this.style.color='#c7d2fe';this.style.background='rgba(255,255,255,.05)'" }}"
-                                   onmouseout="{{ $sActive ? '' : "this.style.color='#64748b';this.style.background=''" }}">
+                                <a href="{{ $s['url'] }}" style="display:block;padding:7px 10px;border-radius:5px;font-size:14px;text-decoration:none;
+                                    {{ $sActive ? 'color:#a5b4fc;font-weight:600;background:rgba(99,102,241,.2);border-left:2px solid #6366f1;' : 'color:#94a3b8;border-left:2px solid transparent;' }}"
+                                   onmouseover="{{ $sActive ? '' : "this.style.color='#e0e7ff';this.style.background='rgba(255,255,255,.07)'" }}"
+                                   onmouseout="{{ $sActive ? '' : "this.style.color='#94a3b8';this.style.background=''" }}">
                                     {{ $s['label'] }}
                                 </a>
                             @endif
