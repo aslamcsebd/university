@@ -453,9 +453,21 @@ function closeModal() {
 function navToggle(treeId, arrowId) {
     const el = document.getElementById(treeId);
     const ar = document.getElementById(arrowId);
-    const open = el.style.display === 'none';
-    el.style.display = open ? 'block' : 'none';
-    if (ar) ar.style.transform = open ? 'rotate(90deg)' : '';
+    const isOpen = el.style.display !== 'none';
+
+    // close all other open menus
+    document.querySelectorAll('[id^="nm"]').forEach(menu => {
+        if (menu.id !== treeId && menu.style.display !== 'none') {
+            menu.style.display = 'none';
+            const idx = menu.id.replace('nm', '');
+            const arrow = document.getElementById('na' + idx);
+            if (arrow) arrow.style.transform = '';
+        }
+    });
+
+    // toggle clicked menu
+    el.style.display = isOpen ? 'none' : 'block';
+    if (ar) ar.style.transform = isOpen ? '' : 'rotate(90deg)';
 }
 </script>
 </body>
