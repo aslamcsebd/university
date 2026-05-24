@@ -2,35 +2,35 @@
 @section('title', 'Marksheet Setting')
 @section('heading', 'Marksheet Setting')
 @section('content')
-<div class="card" style="max-width:600px;">
-    <form style="display:flex;flex-direction:column;gap:16px;">
-        <div>
-            <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Marksheet Title</label>
-            <input type="text" value="Academic Transcript" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;">
-        </div>
-        <div>
-            <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Institution Name</label>
-            <input type="text" value="Grand University" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;">
-        </div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+<div class="card" style="padding:24px;">
+    <div style="font-size:14px;font-weight:700;color:#1e1b4b;margin-bottom:18px;">⚙️ Marksheet Configuration</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+        <div><label class="form-label">Marksheet Title</label><input class="form-input" value="Academic Transcript"></div>
+        <div><label class="form-label">Institution Name</label><input class="form-input" value="Grand University"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div>
-                <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Pass Mark (%)</label>
-                <input type="number" value="40" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;">
-            </div>
-            <div>
-                <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px;">Full Mark</label>
-                <input type="number" value="100" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;">
-            </div>
+            <div><label class="form-label">Pass Mark (%)</label><input type="number" class="form-input" value="40"></div>
+            <div><label class="form-label">Full Mark</label><input type="number" class="form-input" value="100"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <input type="checkbox" id="show_rank" checked style="width:16px;height:16px;">
-            <label for="show_rank" style="font-size:13px;font-weight:600;color:#374151;">Show Class Rank</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            <label class="form-label">Display Options</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> Show Class Rank</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> Show Principal Signature</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> Show GPA</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox"> Show Remarks</label>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <input type="checkbox" id="show_sign" checked style="width:16px;height:16px;">
-            <label for="show_sign" style="font-size:13px;font-weight:600;color:#374151;">Show Principal Signature</label>
-        </div>
-        <button type="submit" style="padding:10px 24px;background:#4f46e5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;align-self:flex-start;">Save Settings</button>
-    </form>
+        <button class="btn btn-primary">Save Settings</button>
+    </div>
+</div>
+<div class="card" style="padding:24px;">
+    <div style="font-size:14px;font-weight:700;color:#1e1b4b;margin-bottom:18px;">🖨 Print Settings</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+        <div><label class="form-label">Paper Size</label><select class="form-select"><option>A4</option><option>A5</option><option>Letter</option></select></div>
+        <div><label class="form-label">Orientation</label><select class="form-select"><option>Portrait</option><option>Landscape</option></select></div>
+        <div><label class="form-label">Header Color</label><input type="color" class="form-input" value="#1e1b4b" style="height:40px;cursor:pointer;"></div>
+        <div><label class="form-label">Footer Note</label><textarea class="form-input" rows="3">This is an official academic transcript issued by the institution.</textarea></div>
+        <button class="btn btn-secondary">Preview</button>
+    </div>
+</div>
 </div>
 @endsection

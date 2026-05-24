@@ -45,6 +45,10 @@
 $path = request()->getPathInfo();
 
 $mergedNav = [
+
+    // ── 🔴 ADMIN ──────────────────────────────────────────
+    ['role_divider'=>true, 'label'=>'Admin', 'color'=>'#f87171', 'line'=>'rgba(248,113,113,.25)'],
+
     [
         'label'=>'Academic',     'icon'=>'🏛️',
         'sub' => [
@@ -243,18 +247,7 @@ $mergedNav = [
             ['label'=>'Meeting Types',      'url'=>'/frontdesk/meeting-types'],
         ],
     ],
-    [
-        'label'=>'Student Panel','icon'=>'🎓',
-        'sub' => [
-            ['label'=>'Dashboard',          'url'=>'/student/dashboard'],
-            ['label'=>'Class Schedules',    'url'=>'/student/class-schedules'],
-            ['label'=>'Exam Schedules',     'url'=>'/student/exam-schedules'],
-            ['label'=>'Apply Leaves',       'url'=>'/student/apply-leaves'],
-            ['label'=>'Notices',            'url'=>'/student/notices'],
-            ['label'=>'Transcript',         'url'=>'/student/transcript'],
-            ['label'=>'My Profile',         'url'=>'/student/my-profile'],
-        ],
-    ],
+
     [
         'label'=>'Transcripts',  'icon'=>'🏅',
         'sub' => [
@@ -332,11 +325,32 @@ $mergedNav = [
             ['label'=>'Student Panel',      'url'=>'/settings/student-panel'],
         ],
     ],
+
+    // ── 🟡 STAFF / TEACHER ──────────────────────────────
+    ['role_divider'=>true, 'label'=>'Staff / Teacher', 'color'=>'#fbbf24', 'line'=>'rgba(251,191,36,.25)'],
+
+    // ── 🟢 STUDENT ────────────────────────────────────
+    ['role_divider'=>true, 'label'=>'Student', 'color'=>'#34d399', 'line'=>'rgba(52,211,153,.25)'],
+
+    [
+        'label'=>'Student Panel','icon'=>'🎓',
+        'sub' => [
+            ['label'=>'Dashboard',          'url'=>'/student/dashboard'],
+            ['label'=>'Class Schedules',    'url'=>'/student/class-schedules'],
+            ['label'=>'Exam Schedules',     'url'=>'/student/exam-schedules'],
+            ['label'=>'Apply Leaves',       'url'=>'/student/apply-leaves'],
+            ['label'=>'Notices',            'url'=>'/student/notices'],
+            ['label'=>'Transcript',         'url'=>'/student/transcript'],
+            ['label'=>'My Profile',         'url'=>'/student/my-profile'],
+        ],
+    ],
 ];
 
+
 // count only non-sep leaves
-$totalPages = 2; // Overview + Nav Tree
+$totalPages = 2;
 foreach ($mergedNav as $g) {
+    if (isset($g['role_divider'])) continue;
     foreach ($g['sub'] as $s) {
         if (!isset($s['sep'])) $totalPages++;
     }
@@ -353,7 +367,12 @@ foreach ($mergedNav as $g) {
             </div>
         </div>
         <nav style="flex:1; min-height:0; padding:8px 8px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent;">
-            <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#6366f1;text-transform:uppercase;padding:6px 10px 4px;">Academic Dashboard</div>
+
+            {{-- Role: Admin --}}
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 10px 4px;">
+                <span style="font-size:9px;font-weight:800;letter-spacing:.1em;color:#a5b4fc;text-transform:uppercase;">🔴 Admin Only</span>
+                <div style="flex:1;height:1px;background:rgba(165,180,252,.2);"></div>
+            </div>
 
             @php $ovActive = str_starts_with($path, '/academic/overview'); @endphp
             <a href="/academic/overview" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:7px;font-size:14px;text-decoration:none;
@@ -363,7 +382,7 @@ foreach ($mergedNav as $g) {
                 <span>📊</span><span style="flex:1;">Overview</span>
             </a>
             @php $treeActive = str_starts_with($path, '/academic/tree'); @endphp
-            <a href="/academic/tree" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:7px;font-size:14px;text-decoration:none;margin-bottom:4px;
+            <a href="/academic/tree" style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:7px;font-size:14px;text-decoration:none;margin-bottom:2px;
                 {{ $treeActive ? 'background:#4f46e5;color:#fff;font-weight:600;' : 'color:#c7d2fe;' }}"
                onmouseover="{{ $treeActive ? '' : "this.style.background='rgba(255,255,255,.08)'" }}"
                onmouseout="{{ $treeActive ? '' : "this.style.background=''" }}">
@@ -371,6 +390,12 @@ foreach ($mergedNav as $g) {
             </a>
 
             @foreach($mergedNav as $mi => $m)
+                @if(isset($m['role_divider']))
+                    <div style="display:flex;align-items:center;gap:6px;padding:12px 10px 4px;">
+                        <span style="font-size:9px;font-weight:800;letter-spacing:.12em;color:{{ $m['color'] }};text-transform:uppercase;white-space:nowrap;">{{ $m['label'] }}</span>
+                        <div style="flex:1;height:1px;background:{{ $m['line'] }};"></div>
+                    </div>
+                @else
                 @php
                     $count = collect($m['sub'])->filter(fn($s) => !isset($s['sep']))->count();
                     $mActive = false;
@@ -410,7 +435,7 @@ foreach ($mergedNav as $g) {
                             @endif
                         @endforeach
                     </div>
-                </div>
+                @endif
             @endforeach
         </nav>
         <div style="padding:12px 20px; border-top:1px solid rgba(255,255,255,.1); font-size:12px; color:#a5b4fc; display:flex; flex-direction:column; gap:6px;">
