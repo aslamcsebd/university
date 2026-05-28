@@ -136,6 +136,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/my-leaves',          fn() => view('staff.my-leaves'))->name('staff.my-leaves');
         Route::get('/leave-types',        fn() => view('staff.leave-types'))->name('staff.leave-types');
         Route::get('/manage-leave',       fn() => view('staff.manage-leave'))->name('staff.manage-leave');
+        Route::get('/my-profile',          fn() => view('staff.my-profile'))->name('staff.my-profile');
+    });
+
+    // Teacher Panel
+    Route::prefix('teacher')->group(function () {
+        Route::get('/dashboard',       fn() => view('teacher.dashboard'))->name('teacher.dashboard');
+        Route::get('/my-classes',      fn() => view('teacher.my-classes'))->name('teacher.my-classes');
+        Route::get('/class-schedules', fn() => view('teacher.class-schedules'))->name('teacher.class-schedules');
+        Route::get('/exam-schedules',  fn() => view('teacher.exam-schedules'))->name('teacher.exam-schedules');
+        Route::get('/mark-entry',      fn() => view('teacher.mark-entry'))->name('teacher.mark-entry');
+        Route::get('/attendance',      fn() => view('teacher.attendance'))->name('teacher.attendance');
+        Route::get('/assignments',     fn() => view('teacher.assignments'))->name('teacher.assignments');
+        Route::get('/apply-leave',     fn() => view('teacher.apply-leave'))->name('teacher.apply-leave');
+        Route::get('/my-leaves',       fn() => view('teacher.my-leaves'))->name('teacher.my-leaves');
+        Route::get('/my-profile',      fn() => view('staff.my-profile'))->name('teacher.my-profile');
     });
 
     // Facilities (11)

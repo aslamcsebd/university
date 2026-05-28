@@ -329,6 +329,25 @@ $mergedNav = [
     // ── 🟡 STAFF / TEACHER ──────────────────────────────
     ['role_divider'=>true, 'label'=>'Staff / Teacher', 'color'=>'#fbbf24', 'line'=>'rgba(251,191,36,.25)'],
 
+    [
+        'label'=>'Teacher Panel', 'icon'=>'👨‍🏫',
+        'sub' => [
+            ['label'=>'Dashboard',       'url'=>'/teacher/dashboard'],
+            ['label'=>'My Classes',      'url'=>'/teacher/my-classes'],
+            ['label'=>'Class Schedules', 'url'=>'/teacher/class-schedules'],
+            ['label'=>'Exam Schedules',  'url'=>'/teacher/exam-schedules'],
+            ['sep'=>true,'label'=>'Teaching'],
+            ['label'=>'Mark Entry',      'url'=>'/teacher/mark-entry'],
+            ['label'=>'Attendance',      'url'=>'/teacher/attendance'],
+            ['label'=>'Assignments',     'url'=>'/teacher/assignments'],
+            ['sep'=>true,'label'=>'Leave'],
+            ['label'=>'Apply Leave',     'url'=>'/teacher/apply-leave'],
+            ['label'=>'My Leaves',       'url'=>'/teacher/my-leaves'],
+            ['sep'=>true,'label'=>'Profile'],
+            ['label'=>'My Profile',      'url'=>'/teacher/my-profile'],
+        ],
+    ],
+
     // ── 🟢 STUDENT ────────────────────────────────────
     ['role_divider'=>true, 'label'=>'Student', 'color'=>'#34d399', 'line'=>'rgba(52,211,153,.25)'],
 
