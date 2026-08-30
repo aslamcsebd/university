@@ -28,5 +28,12 @@
         </div>
         <button type="submit" style="padding:10px 24px;background:#4f46e5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;align-self:flex-start;">Save Settings</button>
     </form>
+    <div class="row jus">
+
+    </div>
+
+    <div id="">
+
+    </div>
 </div>
 @endsection
