@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Academic;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -56,17 +57,43 @@ Route::middleware(['auth'])->group(function () {
     // ─── NOTIFICATIONS (placeholder) ─────────────────────────────────────
     Route::get('/notifications', ComingSoonController::class)->name('notifications.index');
 
-    // ─── PHASE 2+ COMING SOON ─────────────────────────────────────────────
+    // ─── PHASE 2 — UNIVERSITY STRUCTURE ──────────────────────────────────
 
-    // Academic
-    Route::get('/academic', ComingSoonController::class)->name('academic.index');
-    Route::get('/faculties', ComingSoonController::class)->name('faculties.index');
-    Route::get('/departments', ComingSoonController::class)->name('departments.index');
-    Route::get('/programs', ComingSoonController::class)->name('programs.index');
-    Route::get('/batches', ComingSoonController::class)->name('batches.index');
-    Route::get('/courses', ComingSoonController::class)->name('courses.index');
-    Route::get('/sessions', ComingSoonController::class)->name('sessions.index');
-    Route::get('/buildings', ComingSoonController::class)->name('buildings.index');
+    // Academic Overview
+    Route::get('/academic', [Academic\AcademicController::class, 'index'])->name('academic.index');
+
+    // Campuses
+    Route::resource('campuses', Academic\CampusController::class);
+
+    // Buildings
+    Route::resource('buildings', Academic\BuildingController::class);
+
+    // Rooms
+    Route::resource('rooms', Academic\RoomController::class);
+
+    // Faculties
+    Route::resource('faculties', Academic\FacultyController::class);
+
+    // Departments
+    Route::resource('departments', Academic\DepartmentController::class);
+
+    // Academic Sessions + Semesters
+    Route::resource('sessions', Academic\AcademicSessionController::class);
+    Route::post('/sessions/{session}/semesters', [Academic\AcademicSessionController::class, 'storeSemester'])->name('sessions.semesters.store');
+    Route::delete('/sessions/{session}/semesters/{semester}', [Academic\AcademicSessionController::class, 'destroySemester'])->name('sessions.semesters.destroy');
+
+    // Programs
+    Route::resource('programs', Academic\ProgramController::class);
+
+    // Courses + Subjects
+    Route::resource('courses', Academic\CourseController::class);
+    Route::post('/courses/{course}/subjects', [Academic\CourseController::class, 'storeSubject'])->name('courses.subjects.store');
+    Route::delete('/courses/{course}/subjects/{subject}', [Academic\CourseController::class, 'destroySubject'])->name('courses.subjects.destroy');
+
+    // Batches + Sections
+    Route::resource('batches', Academic\BatchController::class);
+    Route::post('/batches/{batch}/sections', [Academic\BatchController::class, 'storeSection'])->name('batches.sections.store');
+    Route::delete('/batches/{batch}/sections/{section}', [Academic\BatchController::class, 'destroySection'])->name('batches.sections.destroy');
 
     // Admission & Students
     Route::get('/admissions', ComingSoonController::class)->name('admissions.index');
