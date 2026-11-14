@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Examination;
 use App\Http\Controllers\Admission;
 use App\Http\Controllers\Students;
 use App\Http\Controllers\Academic;
@@ -130,17 +131,56 @@ Route::middleware(['auth'])->group(function () {
     // Leave (student)
     Route::get('/leave', ComingSoonController::class)->name('leave.index');
 
-    // Schedule & Timetable
-    Route::get('/schedules', ComingSoonController::class)->name('schedules.index');
-    Route::get('/exam-schedules', ComingSoonController::class)->name('exam-schedules.index');
-    Route::get('/timetable', ComingSoonController::class)->name('timetable.index');
+    // ─── PHASE 5 — ACADEMIC OPERATIONS ──────────────────────────────────
 
-    // Examinations
-    Route::get('/exam-types', ComingSoonController::class)->name('exam-types.index');
-    Route::get('/mark-distributions', ComingSoonController::class)->name('mark-distributions.index');
-    Route::get('/marks', ComingSoonController::class)->name('marks.index');
-    Route::get('/results', ComingSoonController::class)->name('results.index');
-    Route::get('/grading', ComingSoonController::class)->name('grading.index');
+    // Grading System
+    Route::resource('grading', Examination\GradingController::class);
+    Route::post('/grading/{grading}/rules', [Examination\GradingController::class, 'storeRule'])->name('grading.rules.store');
+    Route::delete('/grading/{grading}/rules/{rule}', [Examination\GradingController::class, 'destroyRule'])->name('grading.rules.destroy');
+    Route::post('/grading/{grading}/seed', [Examination\GradingController::class, 'seedDefault'])->name('grading.seed');
+
+    // Class Schedules
+    Route::get('/schedules', [Academic\ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/schedules/create', [Academic\ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/schedules', [Academic\ScheduleController::class, 'store'])->name('schedules.store');
+    Route::delete('/schedules/{schedule}', [Academic\ScheduleController::class, 'destroy'])->name('schedules.destroy');
+
+    // Exam Schedules
+    Route::get('/exam-schedules', [Academic\ExamScheduleController::class, 'index'])->name('exam-schedules.index');
+    Route::post('/exam-schedules', [Academic\ExamScheduleController::class, 'store'])->name('exam-schedules.store');
+    Route::post('/exam-schedules/{examSchedule}/publish', [Academic\ExamScheduleController::class, 'publish'])->name('exam-schedules.publish');
+    Route::delete('/exam-schedules/{examSchedule}', [Academic\ExamScheduleController::class, 'destroy'])->name('exam-schedules.destroy');
+
+    // Timetable view
+    Route::get('/timetable', fn() => redirect()->route('schedules.index'))->name('timetable.index');
+
+    // Student Attendance
+    Route::get('/attendance/students', [Examination\AttendanceController::class, 'studentsIndex'])->name('attendance.students.index');
+    Route::post('/attendance/students', [Examination\AttendanceController::class, 'markStudents'])->name('attendance.students.mark');
+    Route::get('/attendance/students/list', [Examination\AttendanceController::class, 'getStudentsForCourse'])->name('attendance.students.list');
+
+    // Staff Attendance
+    Route::get('/attendance/staff', [Examination\AttendanceController::class, 'staffIndex'])->name('attendance.staff.index');
+    Route::post('/attendance/staff', [Examination\AttendanceController::class, 'markStaff'])->name('attendance.staff.mark');
+
+    // Exam Types
+    Route::get('/exam-types', [Examination\ExamController::class, 'typesIndex'])->name('exam-types.index');
+    Route::post('/exam-types', [Examination\ExamController::class, 'storeType'])->name('exam-types.store');
+    Route::delete('/exam-types/{examType}', [Examination\ExamController::class, 'destroyType'])->name('exam-types.destroy');
+
+    // Mark Distributions
+    Route::get('/mark-distributions', [Examination\ExamController::class, 'distributionsIndex'])->name('mark-distributions.index');
+    Route::post('/mark-distributions', [Examination\ExamController::class, 'storeDistribution'])->name('mark-distributions.store');
+    Route::delete('/mark-distributions/{distribution}', [Examination\ExamController::class, 'destroyDistribution'])->name('mark-distributions.destroy');
+
+    // Mark Entry
+    Route::get('/marks', [Examination\ExamController::class, 'marksIndex'])->name('marks.index');
+    Route::post('/marks', [Examination\ExamController::class, 'saveMarks'])->name('marks.save');
+
+    // Results
+    Route::get('/results', [Examination\ResultController::class, 'index'])->name('results.index');
+    Route::post('/results/process', [Examination\ResultController::class, 'process'])->name('results.process');
+    Route::post('/results/publish', [Examination\ResultController::class, 'publish'])->name('results.publish');
 
     // ─── PHASE 3 — HR, TEACHERS & PAYROLL ────────────────────────────────
 
