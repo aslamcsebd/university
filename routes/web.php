@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Academic;
+use App\Http\Controllers\HR;
+use App\Http\Controllers\Payroll;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -114,16 +116,56 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/results', ComingSoonController::class)->name('results.index');
     Route::get('/grading', ComingSoonController::class)->name('grading.index');
 
-    // Staff & HR
-    Route::get('/staff', ComingSoonController::class)->name('staff.index');
-    Route::get('/teachers', ComingSoonController::class)->name('teachers.index');
+    // ─── PHASE 3 — HR, TEACHERS & PAYROLL ────────────────────────────────
+
+    // Staff
+    Route::resource('staff', HR\StaffController::class);
+    Route::patch('/staff/{staff}/toggle', [HR\StaffController::class, 'toggleStatus'])->name('staff.toggle');
+
+    // Teachers
+    Route::resource('teachers', HR\TeacherController::class);
+
+    // Designations
+    Route::get('/designations', [HR\DesignationController::class, 'index'])->name('designations.index');
+    Route::post('/designations', [HR\DesignationController::class, 'store'])->name('designations.store');
+    Route::put('/designations/{designation}', [HR\DesignationController::class, 'update'])->name('designations.update');
+    Route::delete('/designations/{designation}', [HR\DesignationController::class, 'destroy'])->name('designations.destroy');
+
+    // Work Shifts
+    Route::get('/shifts', [HR\WorkShiftController::class, 'index'])->name('shifts.index');
+    Route::post('/shifts', [HR\WorkShiftController::class, 'store'])->name('shifts.store');
+    Route::put('/shifts/{shift}', [HR\WorkShiftController::class, 'update'])->name('shifts.update');
+    Route::delete('/shifts/{shift}', [HR\WorkShiftController::class, 'destroy'])->name('shifts.destroy');
+
+    // Leave Types
+    Route::get('/leave-types', [HR\LeaveTypeController::class, 'index'])->name('leave-types.index');
+    Route::post('/leave-types', [HR\LeaveTypeController::class, 'store'])->name('leave-types.store');
+    Route::put('/leave-types/{leaveType}', [HR\LeaveTypeController::class, 'update'])->name('leave-types.update');
+    Route::delete('/leave-types/{leaveType}', [HR\LeaveTypeController::class, 'destroy'])->name('leave-types.destroy');
+
+    // Leave Management
+    Route::get('/staff-leave', [HR\LeaveController::class, 'index'])->name('staff-leave.index');
+    Route::post('/staff-leave/{application}/approve', [HR\LeaveController::class, 'approve'])->name('staff-leave.approve');
+    Route::post('/staff-leave/{application}/reject', [HR\LeaveController::class, 'reject'])->name('staff-leave.reject');
+
+    // HR Overview
+    Route::get('/hr', fn() => redirect()->route('staff.index'))->name('hr.index');
+
+    // Attendance (Phase 5)
     Route::get('/attendance/students', ComingSoonController::class)->name('attendance.students.index');
     Route::get('/attendance/staff', ComingSoonController::class)->name('attendance.staff.index');
-    Route::get('/staff-leave', ComingSoonController::class)->name('staff-leave.index');
-    Route::get('/designations', ComingSoonController::class)->name('designations.index');
-    Route::get('/hr', ComingSoonController::class)->name('hr.index');
-    Route::get('/salary', ComingSoonController::class)->name('salary.index');
-    Route::get('/payroll', ComingSoonController::class)->name('payroll.index');
+
+    // Salary Structures
+    Route::get('/salary', [Payroll\SalaryController::class, 'index'])->name('salary.index');
+    Route::get('/salary/{staff}/edit', [Payroll\SalaryController::class, 'edit'])->name('salary.edit');
+    Route::put('/salary/{staff}', [Payroll\SalaryController::class, 'update'])->name('salary.update');
+
+    // Payroll
+    Route::get('/payroll', [Payroll\PayrollController::class, 'index'])->name('payroll.index');
+    Route::post('/payroll/generate', [Payroll\PayrollController::class, 'generate'])->name('payroll.generate');
+    Route::post('/payroll/{payroll}/approve', [Payroll\PayrollController::class, 'approve'])->name('payroll.approve');
+    Route::post('/payroll/{payroll}/paid', [Payroll\PayrollController::class, 'markPaid'])->name('payroll.paid');
+    Route::delete('/payroll/{payroll}', [Payroll\PayrollController::class, 'destroy'])->name('payroll.destroy');
 
     // Finance
     Route::get('/fee-types', ComingSoonController::class)->name('fee-types.index');
