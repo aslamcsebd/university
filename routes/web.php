@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admission;
+use App\Http\Controllers\Students;
 use App\Http\Controllers\Academic;
 use App\Http\Controllers\HR;
 use App\Http\Controllers\Payroll;
@@ -97,11 +99,35 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/batches/{batch}/sections', [Academic\BatchController::class, 'storeSection'])->name('batches.sections.store');
     Route::delete('/batches/{batch}/sections/{section}', [Academic\BatchController::class, 'destroySection'])->name('batches.sections.destroy');
 
-    // Admission & Students
-    Route::get('/admissions', ComingSoonController::class)->name('admissions.index');
-    Route::get('/admissions/create', ComingSoonController::class)->name('admissions.create');
-    Route::get('/students', ComingSoonController::class)->name('students.index');
-    Route::get('/enrollments', ComingSoonController::class)->name('enrollments.index');
+    // ─── PHASE 4 — ADMISSION & STUDENTS ─────────────────────────────────
+
+    // Admission Applications
+    Route::resource('admissions', Admission\AdmissionController::class);
+    Route::patch('/admissions/{admission}/status', [Admission\AdmissionController::class, 'updateStatus'])->name('admissions.status');
+    Route::post('/admissions/{admission}/convert', [Admission\AdmissionController::class, 'convert'])->name('admissions.convert');
+
+    // Admission Status Types
+    Route::get('/admission-statuses', [Admission\AdmissionStatusController::class, 'index'])->name('admission.statuses.index');
+    Route::post('/admission-statuses', [Admission\AdmissionStatusController::class, 'store'])->name('admission.statuses.store');
+    Route::put('/admission-statuses/{status}', [Admission\AdmissionStatusController::class, 'update'])->name('admission.statuses.update');
+    Route::delete('/admission-statuses/{status}', [Admission\AdmissionStatusController::class, 'destroy'])->name('admission.statuses.destroy');
+
+    // Students
+    Route::resource('students', Students\StudentController::class);
+    Route::post('/students/{student}/notes', [Students\StudentController::class, 'storeNote'])->name('students.notes.store');
+
+    // Enrollments
+    Route::get('/enrollments', [Students\EnrollmentController::class, 'index'])->name('enrollments.index');
+    Route::get('/enrollments/create', [Students\EnrollmentController::class, 'create'])->name('enrollments.create');
+    Route::post('/enrollments', [Students\EnrollmentController::class, 'store'])->name('enrollments.store');
+    Route::get('/enrollments/bulk', fn() => view('students.bulk-enroll', [
+        'semesters' => \App\Models\Semester::with('academicSession')->orderByDesc('created_at')->get(),
+        'sections'  => \App\Models\Section::with('batch')->orderBy('name')->get(),
+    ]))->name('enrollments.bulk');
+    Route::post('/enrollments/bulk', [Students\EnrollmentController::class, 'bulkEnroll'])->name('enrollments.bulk-store');
+    Route::patch('/enrollments/{enrollment}/withdraw', [Students\EnrollmentController::class, 'withdraw'])->name('enrollments.withdraw');
+
+    // Leave (student)
     Route::get('/leave', ComingSoonController::class)->name('leave.index');
 
     // Schedule & Timetable
