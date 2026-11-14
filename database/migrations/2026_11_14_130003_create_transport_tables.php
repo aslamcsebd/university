@@ -9,43 +9,44 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehicles', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('plate_no', 30)->unique();
-            $table->string('type', 10)->default('bus'); // bus / van / car
-            $table->unsignedSmallInteger('capacity');
+            $table->enum('type', ['bus', 'van', 'car'])->default('bus');
+            $table->integer('capacity');
             $table->string('model', 100)->nullable();
-            $table->year('year')->nullable();
-            $table->foreignId('driver_id')->nullable()->constrained('staff')->nullOnDelete();
+            $table->smallInteger('year')->nullable();
+            $table->string('driver_id', 36)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('transport_routes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('vehicle_id')->constrained()->restrictOnDelete();
-            $table->string('name', 200);
-            $table->string('from_location', 200);
-            $table->string('to_location', 200);
-            $table->decimal('fare', 8, 2)->default(0);
+            $table->uuid('id')->primary();
+            $table->foreignUuid('vehicle_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('from_location', 255)->nullable();
+            $table->string('to_location', 255)->nullable();
+            $table->decimal('fare', 10, 2)->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
         Schema::create('transport_stops', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('route_id')->constrained('transport_routes')->cascadeOnDelete();
-            $table->string('name', 200);
-            $table->unsignedTinyInteger('order')->default(1);
+            $table->uuid('id')->primary();
+            $table->foreignUuid('route_id')->constrained('transport_routes')->cascadeOnDelete();
+            $table->string('name');
+            $table->integer('order')->default(0);
             $table->time('pickup_time')->nullable();
             $table->timestamps();
         });
 
         Schema::create('transport_allocations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('route_id')->constrained('transport_routes')->restrictOnDelete();
-            $table->unsignedBigInteger('person_id');
-            $table->string('person_type', 10); // student / staff
-            $table->foreignId('stop_id')->nullable()->constrained('transport_stops')->nullOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('route_id')->constrained('transport_routes')->cascadeOnDelete();
+            $table->string('person_id', 36);
+            $table->enum('person_type', ['student', 'staff'])->default('student');
+            $table->string('stop_id', 36)->nullable();
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->boolean('is_active')->default(true);

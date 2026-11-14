@@ -9,37 +9,36 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('content_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 100)->unique();
-            $table->string('icon', 10)->default('📄');
-            $table->text('description')->nullable();
+            $table->uuid('id')->primary();
+            $table->string('name', 100);
+            $table->string('icon', 50)->nullable();
             $table->timestamps();
         });
 
         Schema::create('study_contents', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('session_course_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('content_type_id')->constrained()->restrictOnDelete();
-            $table->string('title', 255);
+            $table->uuid('id')->primary();
+            $table->foreignUuid('session_course_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('content_type_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('title');
             $table->text('description')->nullable();
-            $table->string('file_path', 500)->nullable();
-            $table->unsignedBigInteger('file_size')->nullable();
-            $table->foreignId('uploaded_by')->constrained('users')->restrictOnDelete();
+            $table->string('file_path')->nullable();
+            $table->string('file_size')->nullable();
+            $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('is_published')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('assignments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('session_course_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('title', 255);
+            $table->uuid('id')->primary();
+            $table->foreignUuid('session_course_id')->constrained()->cascadeOnDelete();
+            $table->string('title');
             $table->text('description')->nullable();
-            $table->dateTime('due_date');
+            $table->date('due_date');
             $table->decimal('max_marks', 6, 2)->nullable();
-            $table->string('attachment_path', 500)->nullable();
+            $table->string('attachment_path')->nullable();
             $table->boolean('is_published')->default(true);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Library;
+use App\Http\Controllers\Facilities;
+use App\Http\Controllers\Inventory;
+use App\Http\Controllers\Study;
 use App\Http\Controllers\Finance;
 use App\Http\Controllers\Examination;
 use App\Http\Controllers\Admission;
@@ -7,11 +11,6 @@ use App\Http\Controllers\Students;
 use App\Http\Controllers\Academic;
 use App\Http\Controllers\HR;
 use App\Http\Controllers\Payroll;
-use App\Http\Controllers\Library;
-use App\Http\Controllers\Hostel;
-use App\Http\Controllers\Transport;
-use App\Http\Controllers\Inventory;
-use App\Http\Controllers\Study;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -280,125 +279,54 @@ Route::middleware(['auth'])->group(function () {
 
     // ─── PHASE 7 — UNIVERSITY SERVICES ──────────────────────────────────
 
-    // Library — Book Categories
-    Route::get('/book-categories', [Library\BookCategoryController::class, 'index'])->name('book-categories.index');
-    Route::post('/book-categories', [Library\BookCategoryController::class, 'store'])->name('book-categories.store');
-    Route::put('/book-categories/{bookCategory}', [Library\BookCategoryController::class, 'update'])->name('book-categories.update');
-    Route::delete('/book-categories/{bookCategory}', [Library\BookCategoryController::class, 'destroy'])->name('book-categories.destroy');
-
-    // Library — Books
-    Route::get('/books', [Library\BookController::class, 'index'])->name('books.index');
-    Route::post('/books', [Library\BookController::class, 'store'])->name('books.store');
-    Route::put('/books/{book}', [Library\BookController::class, 'update'])->name('books.update');
-    Route::delete('/books/{book}', [Library\BookController::class, 'destroy'])->name('books.destroy');
-
-    // Library — Members
-    Route::get('/library/student-members', [Library\LibraryMemberController::class, 'studentMembers'])->name('library.student-members');
-    Route::get('/library/staff-members', [Library\LibraryMemberController::class, 'staffMembers'])->name('library.staff-members');
-    Route::get('/library/outsider-members', [Library\LibraryMemberController::class, 'outsiderMembers'])->name('library.outsider-members');
-    Route::post('/library/members', [Library\LibraryMemberController::class, 'store'])->name('library.members.store');
-    Route::put('/library/members/{member}', [Library\LibraryMemberController::class, 'update'])->name('library.members.update');
-    Route::delete('/library/members/{member}', [Library\LibraryMemberController::class, 'destroy'])->name('library.members.destroy');
-
-    // Library — Issue & Return
-    Route::get('/library/issue-book', [Library\BookIssueController::class, 'issueIndex'])->name('library.issue-book');
-    Route::post('/library/issue-book', [Library\BookIssueController::class, 'issue'])->name('library.issue');
-    Route::get('/library/issue-return', [Library\BookIssueController::class, 'returnIndex'])->name('library.issue-return');
-    Route::post('/library/issue-return/{issue}/return', [Library\BookIssueController::class, 'processReturn'])->name('library.return');
-    Route::get('/library/book-return-due', [Library\BookIssueController::class, 'overdueIndex'])->name('library.overdue');
-
-    // Library — Book Requests
-    Route::get('/library/book-requests', [Library\BookRequestController::class, 'index'])->name('library.book-requests');
-    Route::post('/library/book-requests', [Library\BookRequestController::class, 'store'])->name('library.book-requests.store');
-    Route::patch('/library/book-requests/{bookRequest}/status', [Library\BookRequestController::class, 'updateStatus'])->name('library.book-requests.status');
-
-    // Library — Card Setting
-    Route::get('/library/card-setting', [Library\LibraryCardSettingController::class, 'index'])->name('library.card-setting');
-    Route::put('/library/card-setting', [Library\LibraryCardSettingController::class, 'update'])->name('library.card-setting.update');
+    // Library
+    Route::get('/library', [Library\LibraryController::class, 'booksIndex'])->name('library.index');
+    Route::post('/library/books', [Library\LibraryController::class, 'storeBook'])->name('library.books.store');
+    Route::delete('/library/books/{book}', [Library\LibraryController::class, 'destroyBook'])->name('library.books.destroy');
+    Route::post('/library/categories', [Library\LibraryController::class, 'storeCat'])->name('library.categories.store');
+    Route::get('/library/members', [Library\LibraryController::class, 'membersIndex'])->name('library.members');
+    Route::post('/library/members', [Library\LibraryController::class, 'storeMember'])->name('library.members.store');
+    Route::get('/library/issue', [Library\LibraryController::class, 'issueIndex'])->name('library.issue');
+    Route::post('/library/issue', [Library\LibraryController::class, 'issueBook'])->name('library.issue.store');
+    Route::post('/library/return/{issue}', [Library\LibraryController::class, 'returnBook'])->name('library.return');
+    Route::get('/library/overdue', [Library\LibraryController::class, 'overdueIndex'])->name('library.overdue');
 
     // Hostel
-    Route::get('/hostels', [Hostel\HostelController::class, 'index'])->name('hostels.index');
-    Route::post('/hostels', [Hostel\HostelController::class, 'store'])->name('hostels.store');
-    Route::put('/hostels/{hostel}', [Hostel\HostelController::class, 'update'])->name('hostels.update');
-    Route::delete('/hostels/{hostel}', [Hostel\HostelController::class, 'destroy'])->name('hostels.destroy');
-
-    Route::get('/hostel-room-types', [Hostel\HostelRoomTypeController::class, 'index'])->name('hostel-room-types.index');
-    Route::post('/hostel-room-types', [Hostel\HostelRoomTypeController::class, 'store'])->name('hostel-room-types.store');
-    Route::put('/hostel-room-types/{roomType}', [Hostel\HostelRoomTypeController::class, 'update'])->name('hostel-room-types.update');
-    Route::delete('/hostel-room-types/{roomType}', [Hostel\HostelRoomTypeController::class, 'destroy'])->name('hostel-room-types.destroy');
-
-    Route::get('/hostel-rooms', [Hostel\HostelRoomController::class, 'index'])->name('hostel-rooms.index');
-    Route::post('/hostel-rooms', [Hostel\HostelRoomController::class, 'store'])->name('hostel-rooms.store');
-    Route::put('/hostel-rooms/{hostelRoom}', [Hostel\HostelRoomController::class, 'update'])->name('hostel-rooms.update');
-    Route::delete('/hostel-rooms/{hostelRoom}', [Hostel\HostelRoomController::class, 'destroy'])->name('hostel-rooms.destroy');
-
-    Route::get('/hostel/students', [Hostel\HostelAllocationController::class, 'studentIndex'])->name('hostel.students');
-    Route::get('/hostel/staff', [Hostel\HostelAllocationController::class, 'staffIndex'])->name('hostel.staff');
-    Route::post('/hostel/allocations', [Hostel\HostelAllocationController::class, 'store'])->name('hostel.allocations.store');
-    Route::patch('/hostel/allocations/{allocation}/vacate', [Hostel\HostelAllocationController::class, 'vacate'])->name('hostel.allocations.vacate');
+    Route::get('/hostel', [Facilities\HostelController::class, 'index'])->name('hostel.index');
+    Route::post('/hostel', [Facilities\HostelController::class, 'store'])->name('hostel.store');
+    Route::get('/hostel/{hostel}/rooms', [Facilities\HostelController::class, 'roomsIndex'])->name('hostel.rooms');
+    Route::post('/hostel/{hostel}/rooms', [Facilities\HostelController::class, 'storeRoom'])->name('hostel.rooms.store');
+    Route::get('/hostel/allocations', [Facilities\HostelController::class, 'allocationsIndex'])->name('hostel.allocations');
+    Route::post('/hostel/allocations', [Facilities\HostelController::class, 'allocate'])->name('hostel.allocate');
+    Route::patch('/hostel/allocations/{allocation}/vacate', [Facilities\HostelController::class, 'vacate'])->name('hostel.vacate');
+    Route::post('/hostel/room-types', [Facilities\HostelController::class, 'storeRoomType'])->name('hostel.room-types.store');
 
     // Transport
-    Route::get('/vehicles', [Transport\VehicleController::class, 'index'])->name('vehicles.index');
-    Route::post('/vehicles', [Transport\VehicleController::class, 'store'])->name('vehicles.store');
-    Route::put('/vehicles/{vehicle}', [Transport\VehicleController::class, 'update'])->name('vehicles.update');
-    Route::delete('/vehicles/{vehicle}', [Transport\VehicleController::class, 'destroy'])->name('vehicles.destroy');
-
-    Route::get('/transport-routes', [Transport\TransportRouteController::class, 'index'])->name('transport-routes.index');
-    Route::post('/transport-routes', [Transport\TransportRouteController::class, 'store'])->name('transport-routes.store');
-    Route::put('/transport-routes/{route}', [Transport\TransportRouteController::class, 'update'])->name('transport-routes.update');
-    Route::delete('/transport-routes/{route}', [Transport\TransportRouteController::class, 'destroy'])->name('transport-routes.destroy');
-    Route::post('/transport-routes/{route}/stops', [Transport\TransportRouteController::class, 'storeStop'])->name('transport-routes.stops.store');
-    Route::delete('/transport-routes/{route}/stops/{stop}', [Transport\TransportRouteController::class, 'destroyStop'])->name('transport-routes.stops.destroy');
-
-    Route::get('/transport/students', [Transport\TransportAllocationController::class, 'studentIndex'])->name('transport.students');
-    Route::get('/transport/staff', [Transport\TransportAllocationController::class, 'staffIndex'])->name('transport.staff');
-    Route::post('/transport/allocations', [Transport\TransportAllocationController::class, 'store'])->name('transport.allocations.store');
-    Route::patch('/transport/allocations/{allocation}/deactivate', [Transport\TransportAllocationController::class, 'deactivate'])->name('transport.allocations.deactivate');
+    Route::get('/transport', [Facilities\TransportController::class, 'index'])->name('transport.index');
+    Route::post('/transport/vehicles', [Facilities\TransportController::class, 'storeVehicle'])->name('transport.vehicles.store');
+    Route::post('/transport/routes', [Facilities\TransportController::class, 'storeRoute'])->name('transport.routes.store');
+    Route::post('/transport/routes/{route}/stops', [Facilities\TransportController::class, 'storeStop'])->name('transport.stops.store');
+    Route::get('/transport/allocations', [Facilities\TransportController::class, 'allocationsIndex'])->name('transport.allocations');
+    Route::post('/transport/allocations', [Facilities\TransportController::class, 'allocate'])->name('transport.allocate');
+    Route::patch('/transport/allocations/{allocation}/remove', [Facilities\TransportController::class, 'deallocate'])->name('transport.deallocate');
 
     // Inventory
-    Route::get('/item-categories', [Inventory\ItemCategoryController::class, 'index'])->name('item-categories.index');
-    Route::post('/item-categories', [Inventory\ItemCategoryController::class, 'store'])->name('item-categories.store');
-    Route::put('/item-categories/{category}', [Inventory\ItemCategoryController::class, 'update'])->name('item-categories.update');
-    Route::delete('/item-categories/{category}', [Inventory\ItemCategoryController::class, 'destroy'])->name('item-categories.destroy');
-
-    Route::get('/stores', [Inventory\StoreController::class, 'index'])->name('stores.index');
-    Route::post('/stores', [Inventory\StoreController::class, 'store'])->name('stores.store');
-    Route::put('/stores/{store}', [Inventory\StoreController::class, 'update'])->name('stores.update');
-    Route::delete('/stores/{store}', [Inventory\StoreController::class, 'destroy'])->name('stores.destroy');
-
-    Route::get('/suppliers', [Inventory\SupplierController::class, 'index'])->name('suppliers.index');
-    Route::post('/suppliers', [Inventory\SupplierController::class, 'store'])->name('suppliers.store');
-    Route::put('/suppliers/{supplier}', [Inventory\SupplierController::class, 'update'])->name('suppliers.update');
-    Route::delete('/suppliers/{supplier}', [Inventory\SupplierController::class, 'destroy'])->name('suppliers.destroy');
-
-    Route::get('/items', [Inventory\ItemController::class, 'index'])->name('items.index');
-    Route::post('/items', [Inventory\ItemController::class, 'store'])->name('items.store');
-    Route::put('/items/{item}', [Inventory\ItemController::class, 'update'])->name('items.update');
-    Route::delete('/items/{item}', [Inventory\ItemController::class, 'destroy'])->name('items.destroy');
-
-    Route::get('/item-stocks', [Inventory\ItemStockController::class, 'index'])->name('item-stocks.index');
-    Route::post('/item-stocks', [Inventory\ItemStockController::class, 'store'])->name('item-stocks.store');
-
-    Route::get('/issue-items', [Inventory\ItemIssueController::class, 'issueIndex'])->name('issue-items.index');
-    Route::post('/issue-items', [Inventory\ItemIssueController::class, 'issue'])->name('issue-items.issue');
-    Route::get('/issue-items/return', [Inventory\ItemIssueController::class, 'returnIndex'])->name('issue-items.return-index');
-    Route::post('/issue-items/{issue}/return', [Inventory\ItemIssueController::class, 'processReturn'])->name('issue-items.return');
+    Route::get('/inventory', [Inventory\InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory/items', [Inventory\InventoryController::class, 'storeItem'])->name('inventory.items.store');
+    Route::post('/inventory/stock-in', [Inventory\InventoryController::class, 'stockIn'])->name('inventory.stock-in');
+    Route::post('/inventory/issue', [Inventory\InventoryController::class, 'issueItem'])->name('inventory.issue');
+    Route::get('/suppliers', [Inventory\InventoryController::class, 'suppliersIndex'])->name('suppliers.index');
+    Route::post('/suppliers', [Inventory\InventoryController::class, 'storeSupplier'])->name('inventory.suppliers.store');
+    Route::post('/inventory/categories', [Inventory\InventoryController::class, 'storeCat'])->name('inventory.categories.store');
+    Route::post('/inventory/stores', [Inventory\InventoryController::class, 'storeStore'])->name('inventory.stores.store');
 
     // Study Materials
-    Route::get('/content-types', [Study\ContentTypeController::class, 'index'])->name('content-types.index');
-    Route::post('/content-types', [Study\ContentTypeController::class, 'store'])->name('content-types.store');
-    Route::put('/content-types/{contentType}', [Study\ContentTypeController::class, 'update'])->name('content-types.update');
-    Route::delete('/content-types/{contentType}', [Study\ContentTypeController::class, 'destroy'])->name('content-types.destroy');
-
-    Route::get('/study-contents', [Study\StudyContentController::class, 'index'])->name('study-contents.index');
-    Route::post('/study-contents', [Study\StudyContentController::class, 'store'])->name('study-contents.store');
-    Route::delete('/study-contents/{content}', [Study\StudyContentController::class, 'destroy'])->name('study-contents.destroy');
-    Route::get('/study-downloads', [Study\StudyContentController::class, 'downloadsIndex'])->name('study-downloads.index');
-
-    Route::get('/assignments', [Study\AssignmentController::class, 'index'])->name('assignments.index');
-    Route::post('/assignments', [Study\AssignmentController::class, 'store'])->name('assignments.store');
-    Route::put('/assignments/{assignment}', [Study\AssignmentController::class, 'update'])->name('assignments.update');
-    Route::delete('/assignments/{assignment}', [Study\AssignmentController::class, 'destroy'])->name('assignments.destroy');
+    Route::get('/study-materials', [Study\StudyController::class, 'index'])->name('study-materials.index');
+    Route::post('/study-materials/contents', [Study\StudyController::class, 'storeContent'])->name('study-materials.contents.store');
+    Route::delete('/study-materials/contents/{content}', [Study\StudyController::class, 'destroyContent'])->name('study-materials.contents.destroy');
+    Route::post('/study-materials/assignments', [Study\StudyController::class, 'storeAssignment'])->name('study-materials.assignments.store');
+    Route::delete('/study-materials/assignments/{assignment}', [Study\StudyController::class, 'destroyAssignment'])->name('study-materials.assignments.destroy');
+    Route::post('/study-materials/types', [Study\StudyController::class, 'storeType'])->name('study-materials.types.store');
 
     // Front Desk
     Route::get('/visitors', ComingSoonController::class)->name('visitors.index');
