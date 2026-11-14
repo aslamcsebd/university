@@ -121,12 +121,28 @@
         {{-- Facilities --}}
         @include('components.sidebar-group-item', [
             'label'  => 'Facilities',
-            'active' => request()->routeIs('library.*','hostel.*','transport.*'),
+            'active' => request()->routeIs('library.*','hostels.*','hostel.*','hostel-rooms.*','hostel-room-types.*','vehicles.*','transport-routes.*','transport.*'),
             'icon'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>',
             'items'  => [
-                ['label'=>'Library',   'route'=>'library.index'],
-                ['label'=>'Hostel',    'route'=>'hostel.index'],
-                ['label'=>'Transport', 'route'=>'transport.index'],
+                ['label'=>'Book List',          'route'=>'books.index'],
+                ['label'=>'Book Categories',    'route'=>'book-categories.index'],
+                ['label'=>'Issue Book',         'route'=>'library.issue-book'],
+                ['label'=>'Issue & Return',     'route'=>'library.issue-return'],
+                ['label'=>'Book Requests',      'route'=>'library.book-requests'],
+                ['label'=>'Book Return Due',    'route'=>'library.overdue'],
+                ['label'=>'Student Members',    'route'=>'library.student-members'],
+                ['label'=>'Staff Members',      'route'=>'library.staff-members'],
+                ['label'=>'Outsider Members',   'route'=>'library.outsider-members'],
+                ['label'=>'Library Settings',   'route'=>'library.card-setting'],
+                ['label'=>'Hostel List',        'route'=>'hostels.index'],
+                ['label'=>'Hostel Rooms',       'route'=>'hostel-rooms.index'],
+                ['label'=>'Room Types',         'route'=>'hostel-room-types.index'],
+                ['label'=>'Hostel Students',    'route'=>'hostel.students'],
+                ['label'=>'Hostel Staff',       'route'=>'hostel.staff'],
+                ['label'=>'Vehicles',           'route'=>'vehicles.index'],
+                ['label'=>'Routes',             'route'=>'transport-routes.index'],
+                ['label'=>'Transport Students', 'route'=>'transport.students'],
+                ['label'=>'Transport Staff',    'route'=>'transport.staff'],
             ]
         ])
 
@@ -158,11 +174,16 @@
         {{-- Inventory --}}
         @include('components.sidebar-group-item', [
             'label'  => 'Inventory',
-            'active' => request()->routeIs('inventory.*','suppliers.*'),
+            'active' => request()->routeIs('items.*','item-categories.*','item-stocks.*','stores.*','suppliers.*','issue-items.*'),
             'icon'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>',
             'items'  => [
-                ['label'=>'Items & Stock', 'route'=>'inventory.index'],
+                ['label'=>'Item List',     'route'=>'items.index'],
+                ['label'=>'Item Stocks',   'route'=>'item-stocks.index'],
+                ['label'=>'Issue Item',    'route'=>'issue-items.index'],
+                ['label'=>'Issue & Return','route'=>'issue-items.return-index'],
+                ['label'=>'Stores',        'route'=>'stores.index'],
                 ['label'=>'Suppliers',     'route'=>'suppliers.index'],
+                ['label'=>'Categories',    'route'=>'item-categories.index'],
             ]
         ])
 
@@ -181,10 +202,13 @@
         {{-- Study Materials --}}
         @include('components.sidebar-group-item', [
             'label'  => 'Study Materials',
-            'active' => request()->routeIs('study-materials.*'),
+            'active' => request()->routeIs('study-contents.*','content-types.*','assignments.*','study-downloads.*'),
             'icon'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>',
             'items'  => [
-                ['label'=>'Materials', 'route'=>'study-materials.index'],
+                ['label'=>'Assignments',   'route'=>'assignments.index'],
+                ['label'=>'Content List',  'route'=>'study-contents.index'],
+                ['label'=>'Content Types', 'route'=>'content-types.index'],
+                ['label'=>'Downloads',     'route'=>'study-downloads.index'],
             ]
         ])
 

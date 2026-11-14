@@ -1,32 +1,46 @@
-@extends('layouts.academic')
-@section('title', 'Book Return Due')
-@section('heading', 'Book Return Due')
-@section('content')
-@php
-$dues = [
-    ['id'=>'ISS-003','member'=>'Carol White', 'book'=>'Database Systems',   'issued'=>'2023-12-20','due'=>'2024-01-03','days'=>18,'fine'=>'$18'],
-    ['id'=>'ISS-007','member'=>'Tom Harris',  'book'=>'Operating Systems',  'issued'=>'2023-12-25','due'=>'2024-01-08','days'=>13,'fine'=>'$13'],
-    ['id'=>'ISS-009','member'=>'Sara Lee',    'book'=>'Computer Networks',  'issued'=>'2024-01-02','due'=>'2024-01-16','days'=>5, 'fine'=>'$5'],
-    ['id'=>'ISS-011','member'=>'Mike Chen',   'book'=>'Algorithms Design',  'issued'=>'2024-01-05','due'=>'2024-01-19','days'=>2, 'fine'=>'$2'],
-];
-@endphp
-<div class="card" style="overflow:hidden;">
-    <table>
-        <thead><tr><th>Issue ID</th><th>Member</th><th>Book</th><th>Issued</th><th>Due Date</th><th>Days Late</th><th>Fine</th><th>Action</th></tr></thead>
-        <tbody>
-        @foreach($dues as $d)
-        <tr>
-            <td style="font-weight:700;color:#6366f1;">{{$d['id']}}</td>
-            <td style="font-weight:600;">{{$d['member']}}</td>
-            <td style="color:#64748b;font-size:12px;">{{$d['book']}}</td>
-            <td style="color:#64748b;font-size:12px;">{{$d['issued']}}</td>
-            <td style="color:#ef4444;font-weight:600;font-size:12px;">{{$d['due']}}</td>
-            <td style="text-align:center;font-weight:700;color:#ef4444;">{{$d['days']}}</td>
-            <td style="font-weight:700;color:#ef4444;">{{$d['fine']}}</td>
-            <td><a href="#" style="font-size:12px;color:#10b981;font-weight:600;text-decoration:none;">Mark Returned</a></td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
-</div>
-@endsection
+<x-app-layout>
+    <x-slot name="title">Book Return Due</x-slot>
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Book Return Due</h1>
+            <p class="text-sm text-gray-500 mt-1">Overdue books that need to be returned</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600">Book</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600">Member</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600">Due Date</th>
+                    <th class="px-4 py-3 text-center font-medium text-gray-600">Days Overdue</th>
+                    <th class="px-4 py-3 text-right font-medium text-gray-600">Est. Fine</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($issues as $issue)
+                @php $overdueDays = $issue->due_date->diffInDays(today()); @endphp
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ Str::limit($issue->book->title, 40) }}</td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium text-gray-900">{{ $issue->member->name }}</div>
+                        <div class="text-xs text-gray-400">{{ $issue->member->member_no }}</div>
+                    </td>
+                    <td class="px-4 py-3 text-red-600 font-semibold">{{ $issue->due_date->format('d M Y') }}</td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="px-2 py-0.5 bg-red-50 text-red-700 rounded-full text-xs font-bold">{{ $overdueDays }} days</span>
+                    </td>
+                    <td class="px-4 py-3 text-right font-semibold text-red-600">
+                        ৳{{ number_format(min($overdueDays * 5, 200), 2) }}
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No overdue books. 🎉</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+        <div class="px-4 py-3 border-t border-gray-100">{{ $issues->links() }}</div>
+    </div>
+</x-app-layout>

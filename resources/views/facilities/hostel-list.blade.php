@@ -1,47 +1,160 @@
-@extends('layouts.academic')
-@section('title', 'Hostel List')
-@section('heading', 'Hostel List')
-@section('header-actions')
-    <a href="#" style="font-size:13px;font-weight:600;padding:7px 16px;background:#4f46e5;color:#fff;border-radius:7px;text-decoration:none;">+ Add Hostel</a>
-@endsection
-@section('content')
-@php
-$hostels = [
-    ['id'=>'HST-001','name'=>'Boys Hostel A','type'=>'Boys', 'rooms'=>40,'capacity'=>160,'occupied'=>142,'warden'=>'Mr. Adams',   'color'=>'#6366f1','bg'=>'#eef2ff'],
-    ['id'=>'HST-002','name'=>'Girls Hostel B','type'=>'Girls','rooms'=>35,'capacity'=>140,'occupied'=>128,'warden'=>'Ms. Rivera',  'color'=>'#ec4899','bg'=>'#fdf2f8'],
-    ['id'=>'HST-003','name'=>'Boys Hostel C', 'type'=>'Boys', 'rooms'=>30,'capacity'=>120,'occupied'=>98, 'warden'=>'Mr. Hassan',  'color'=>'#0ea5e9','bg'=>'#e0f2fe'],
-];
-@endphp
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">
-    @foreach([['Total Hostels','3','🏠','linear-gradient(135deg,#6366f1,#818cf8)'],['Total Capacity','420','🛏️','linear-gradient(135deg,#10b981,#34d399)'],['Occupied','368','👥','linear-gradient(135deg,#f59e0b,#fbbf24)']] as $s)
-    <div style="background:{{$s[3]}};border-radius:14px;padding:18px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-size:26px;font-weight:800;">{{$s[1]}}</div><div style="font-size:12px;opacity:.9;margin-top:2px;">{{$s[0]}}</div></div>
-        <div style="font-size:30px;opacity:.5;">{{$s[2]}}</div>
-    </div>
-    @endforeach
-</div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-@foreach($hostels as $h)
-@php $pct=round($h['occupied']/$h['capacity']*100); @endphp
-<div class="card" style="padding:20px;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="width:44px;height:44px;border-radius:12px;background:{{$h['bg']}};display:flex;align-items:center;justify-content:center;font-size:22px;">🏠</div>
-        <div><div style="font-size:14px;font-weight:700;color:#1e293b;">{{$h['name']}}</div><div style="font-size:11px;color:#94a3b8;">{{$h['id']}} · {{$h['type']}}</div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        @foreach([['Rooms',$h['rooms']],['Capacity',$h['capacity']],['Occupied',$h['occupied']],['Available',$h['capacity']-$h['occupied']]] as $stat)
-        <div style="background:#f8fafc;border-radius:8px;padding:8px;text-align:center;">
-            <div style="font-size:15px;font-weight:800;color:#1e293b;">{{$stat[1]}}</div>
-            <div style="font-size:10px;color:#94a3b8;margin-top:1px;">{{$stat[0]}}</div>
+<x-app-layout>
+    <x-slot name="title">Hostel List</x-slot>
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Hostel List</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ $hostels->count() }} hostels</p>
         </div>
-        @endforeach
+        <button onclick="document.getElementById('add-modal').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Hostel
+        </button>
     </div>
-    <div style="margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin-bottom:4px;"><span>Occupancy</span><span style="font-weight:700;color:{{$h['color']}};">{{$pct}}%</span></div>
-        <div style="height:6px;background:#f1f5f9;border-radius:9999px;overflow:hidden;"><div style="height:100%;width:{{$pct}}%;background:{{$h['color']}};border-radius:9999px;"></div></div>
+
+    @if(session('success'))
+        <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+    @endif
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        @forelse($hostels as $hostel)
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <h3 class="font-semibold text-gray-900">{{ $hostel->name }}</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        <span class="capitalize">{{ $hostel->type }}</span>
+                        @if($hostel->campus) · {{ $hostel->campus->name }}@endif
+                    </p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $hostel->is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">
+                    {{ $hostel->is_active ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="bg-gray-50 rounded-lg p-2 text-center">
+                    <div class="text-lg font-bold text-gray-900">{{ $hostel->rooms_count }}</div>
+                    <div class="text-xs text-gray-500">Rooms</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2 text-center">
+                    <div class="text-lg font-bold text-gray-900">{{ $hostel->warden?->first_name ?? '—' }}</div>
+                    <div class="text-xs text-gray-500">Warden</div>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick='openEditHostel({{ json_encode($hostel) }})'
+                        class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50">Edit</button>
+                <form method="POST" action="{{ route('hostels.destroy', $hostel) }}" onsubmit="return confirm('Delete hostel?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="px-3 py-1.5 border border-red-200 text-red-500 rounded-lg text-xs hover:bg-red-50">Delete</button>
+                </form>
+            </div>
+        </div>
+        @empty
+        <div class="col-span-3 bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
+            No hostels yet. Add your first hostel.
+        </div>
+        @endforelse
     </div>
-    <div style="font-size:12px;color:#64748b;">Warden: <span style="font-weight:600;color:#1e293b;">{{$h['warden']}}</span></div>
-</div>
-@endforeach
-</div>
-@endsection
+
+    {{-- Add Modal --}}
+    <div id="add-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <h3 class="font-bold text-gray-900 mb-4">Add Hostel</h3>
+            <form method="POST" action="{{ route('hostels.store') }}" class="space-y-3">
+                @csrf
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                    <input type="text" name="name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Type *</label>
+                        <select name="type" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Campus</label>
+                        <select name="campus_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">None</option>
+                            @foreach($campuses as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Warden</label>
+                    <select name="warden_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">None</option>
+                        @foreach($wardens as $w)
+                            <option value="{{ $w->id }}">{{ $w->first_name }} {{ $w->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add Hostel</button>
+                    <button type="button" onclick="document.getElementById('add-modal').classList.add('hidden')"
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Edit Modal --}}
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <h3 class="font-bold text-gray-900 mb-4">Edit Hostel</h3>
+            <form method="POST" id="edit-form" class="space-y-3">
+                @csrf @method('PUT')
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                    <input type="text" name="name" id="edit-name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Type *</label>
+                        <select name="type" id="edit-type" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Campus</label>
+                        <select name="campus_id" id="edit-campus" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">None</option>
+                            @foreach($campuses as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Update</button>
+                    <button type="button" onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        function openEditHostel(h) {
+            document.getElementById('edit-form').action = '/hostels/' + h.id;
+            document.getElementById('edit-name').value = h.name;
+            document.getElementById('edit-type').value = h.type;
+            document.getElementById('edit-campus').value = h.campus_id || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+    </script>
+    @endpush
+</x-app-layout>
