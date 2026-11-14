@@ -336,6 +336,9 @@ Route::middleware(['auth'])->group(function () {
     // Transcripts
     Route::get('/transcripts', ComingSoonController::class)->name('transcripts.index');
 
+    // Reports
+    Route::get('/reports', ComingSoonController::class)->name('reports.index');
+
     // Communication
     Route::get('/notices', ComingSoonController::class)->name('notices.index');
     Route::get('/events', ComingSoonController::class)->name('events.index');
