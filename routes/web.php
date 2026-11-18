@@ -11,6 +11,11 @@ use App\Http\Controllers\Students;
 use App\Http\Controllers\Academic;
 use App\Http\Controllers\HR;
 use App\Http\Controllers\Payroll;
+use App\Http\Controllers\Communication;
+use App\Http\Controllers\FrontDesk;
+use App\Http\Controllers\Transcripts;
+use App\Http\Controllers\Reports;
+use App\Http\Controllers\FrontWeb;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +32,13 @@ Route::get('/', function () {
 
 // Authenticated routes
 Route::middleware(['auth'])->group(function () {
+
+    // Theme toggle
+    Route::post('/theme', function (\Illuminate\Http\Request $request) {
+        $theme = $request->input('theme') === 'dark' ? 'dark' : 'light';
+        \App\Models\Setting::set('general.theme', $theme);
+        return response()->json(['ok' => true]);
+    })->name('theme.save');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -65,7 +77,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ─── NOTIFICATIONS (placeholder) ─────────────────────────────────────
-    Route::get('/notifications', ComingSoonController::class)->name('notifications.index');
+    // Notifications
+    Route::get('/notifications', [Communication\NoticeController::class, 'notificationsIndex'])->name('notifications.index');
 
     // ─── PHASE 2 — UNIVERSITY STRUCTURE ──────────────────────────────────
 
@@ -73,27 +86,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/academic', [Academic\AcademicController::class, 'index'])->name('academic.index');
 
     // Campuses
-    Route::resource('campuses', Academic\CampusController::class);
+    Route::resource('campuses', Academic\CampusController::class)->except(['show']);
 
     // Buildings
-    Route::resource('buildings', Academic\BuildingController::class);
+    Route::resource('buildings', Academic\BuildingController::class)->except(['show']);
 
     // Rooms
-    Route::resource('rooms', Academic\RoomController::class);
+    Route::resource('rooms', Academic\RoomController::class)->except(['show']);
 
     // Faculties
-    Route::resource('faculties', Academic\FacultyController::class);
+    Route::resource('faculties', Academic\FacultyController::class)->except(['show']);
 
     // Departments
-    Route::resource('departments', Academic\DepartmentController::class);
+    Route::resource('departments', Academic\DepartmentController::class)->except(['show']);
 
     // Academic Sessions + Semesters
-    Route::resource('sessions', Academic\AcademicSessionController::class);
+    Route::resource('sessions', Academic\AcademicSessionController::class)->except(['show']);
     Route::post('/sessions/{session}/semesters', [Academic\AcademicSessionController::class, 'storeSemester'])->name('sessions.semesters.store');
     Route::delete('/sessions/{session}/semesters/{semester}', [Academic\AcademicSessionController::class, 'destroySemester'])->name('sessions.semesters.destroy');
 
     // Programs
-    Route::resource('programs', Academic\ProgramController::class);
+    Route::resource('programs', Academic\ProgramController::class)->except(['show']);
 
     // Courses + Subjects
     Route::resource('courses', Academic\CourseController::class);
@@ -101,14 +114,14 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/courses/{course}/subjects/{subject}', [Academic\CourseController::class, 'destroySubject'])->name('courses.subjects.destroy');
 
     // Batches + Sections
-    Route::resource('batches', Academic\BatchController::class);
+    Route::resource('batches', Academic\BatchController::class)->except(['show']);
     Route::post('/batches/{batch}/sections', [Academic\BatchController::class, 'storeSection'])->name('batches.sections.store');
     Route::delete('/batches/{batch}/sections/{section}', [Academic\BatchController::class, 'destroySection'])->name('batches.sections.destroy');
 
     // ─── PHASE 4 — ADMISSION & STUDENTS ─────────────────────────────────
 
     // Admission Applications
-    Route::resource('admissions', Admission\AdmissionController::class);
+    Route::resource('admissions', Admission\AdmissionController::class)->except(['edit', 'update']);
     Route::patch('/admissions/{admission}/status', [Admission\AdmissionController::class, 'updateStatus'])->name('admissions.status');
     Route::post('/admissions/{admission}/convert', [Admission\AdmissionController::class, 'convert'])->name('admissions.convert');
 
@@ -139,7 +152,7 @@ Route::middleware(['auth'])->group(function () {
     // ─── PHASE 5 — ACADEMIC OPERATIONS ──────────────────────────────────
 
     // Grading System
-    Route::resource('grading', Examination\GradingController::class);
+    Route::resource('grading', Examination\GradingController::class)->except(['show']);
     Route::post('/grading/{grading}/rules', [Examination\GradingController::class, 'storeRule'])->name('grading.rules.store');
     Route::delete('/grading/{grading}/rules/{rule}', [Examination\GradingController::class, 'destroyRule'])->name('grading.rules.destroy');
     Route::post('/grading/{grading}/seed', [Examination\GradingController::class, 'seedDefault'])->name('grading.seed');
@@ -221,10 +234,6 @@ Route::middleware(['auth'])->group(function () {
 
     // HR Overview
     Route::get('/hr', fn() => redirect()->route('staff.index'))->name('hr.index');
-
-    // Attendance (Phase 5)
-    Route::get('/attendance/students', ComingSoonController::class)->name('attendance.students.index');
-    Route::get('/attendance/staff', ComingSoonController::class)->name('attendance.staff.index');
 
     // Salary Structures
     Route::get('/salary', [Payroll\SalaryController::class, 'index'])->name('salary.index');
@@ -328,10 +337,52 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/study-materials/assignments/{assignment}', [Study\StudyController::class, 'destroyAssignment'])->name('study-materials.assignments.destroy');
     Route::post('/study-materials/types', [Study\StudyController::class, 'storeType'])->name('study-materials.types.store');
 
+    // ─── PHASE 8 — COMMUNICATION & ADMIN ────────────────────────────────
+
+    // Notices & Events
+    Route::get('/notices', [Communication\NoticeController::class, 'noticesIndex'])->name('notices.index');
+    Route::post('/notices', [Communication\NoticeController::class, 'storeNotice'])->name('notices.store');
+    Route::delete('/notices/{notice}', [Communication\NoticeController::class, 'destroyNotice'])->name('notices.destroy');
+    Route::post('/notices/categories', [Communication\NoticeController::class, 'storeCat'])->name('notices.categories.store');
+    Route::get('/events', [Communication\NoticeController::class, 'eventsIndex'])->name('events.index');
+    Route::post('/events', [Communication\NoticeController::class, 'storeEvent'])->name('events.store');
+    Route::delete('/events/{event}', [Communication\NoticeController::class, 'destroyEvent'])->name('events.destroy');
+
     // Front Desk
-    Route::get('/visitors', ComingSoonController::class)->name('visitors.index');
-    Route::get('/enquiries', ComingSoonController::class)->name('enquiries.index');
-    Route::get('/complaints', ComingSoonController::class)->name('complaints.index');
+    Route::get('/visitors', [FrontDesk\FrontDeskController::class, 'visitorsIndex'])->name('visitors.index');
+    Route::post('/visitors', [FrontDesk\FrontDeskController::class, 'storeVisitor'])->name('visitors.store');
+    Route::patch('/visitors/{visitor}/checkout', [FrontDesk\FrontDeskController::class, 'checkoutVisitor'])->name('visitors.checkout');
+    Route::post('/visitors/purposes', [FrontDesk\FrontDeskController::class, 'storePurpose'])->name('visitors.purposes.store');
+    Route::get('/enquiries', [FrontDesk\FrontDeskController::class, 'enquiriesIndex'])->name('enquiries.index');
+    Route::post('/enquiries', [FrontDesk\FrontDeskController::class, 'storeEnquiry'])->name('enquiries.store');
+    Route::patch('/enquiries/{enquiry}/status', [FrontDesk\FrontDeskController::class, 'updateEnquiryStatus'])->name('enquiries.status');
+    Route::post('/enquiries/sources', [FrontDesk\FrontDeskController::class, 'storeSource'])->name('enquiries.sources.store');
+    Route::get('/complaints', [FrontDesk\FrontDeskController::class, 'complaintsIndex'])->name('complaints.index');
+    Route::post('/complaints', [FrontDesk\FrontDeskController::class, 'storeComplaint'])->name('complaints.store');
+    Route::patch('/complaints/{complaint}/status', [FrontDesk\FrontDeskController::class, 'updateComplaintStatus'])->name('complaints.status');
+    Route::post('/complaints/types', [FrontDesk\FrontDeskController::class, 'storeComplaintType'])->name('complaints.types.store');
+
+    // Transcripts
+    Route::get('/transcripts', [Transcripts\TranscriptController::class, 'index'])->name('transcripts.index');
+    Route::post('/transcripts', [Transcripts\TranscriptController::class, 'generate'])->name('transcripts.generate');
+    Route::get('/transcripts/{document}', [Transcripts\TranscriptController::class, 'show'])->name('transcripts.show');
+
+    // Reports
+    Route::get('/reports', [Reports\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/students', [Reports\ReportController::class, 'students'])->name('reports.students');
+    Route::get('/reports/fees', [Reports\ReportController::class, 'fees'])->name('reports.fees');
+    Route::get('/reports/salary', [Reports\ReportController::class, 'salary'])->name('reports.salary');
+    Route::get('/reports/finance', [Reports\ReportController::class, 'finance'])->name('reports.finance');
+    Route::get('/reports/library', [Reports\ReportController::class, 'library'])->name('reports.library');
+
+    // Front Website CMS
+    Route::get('/frontweb/sliders', [FrontWeb\FrontWebController::class, 'slidersIndex'])->name('frontweb.sliders.index');
+    Route::post('/frontweb/sliders', [FrontWeb\FrontWebController::class, 'storeSlider'])->name('frontweb.sliders.store');
+    Route::delete('/frontweb/sliders/{slider}', [FrontWeb\FrontWebController::class, 'destroySlider'])->name('frontweb.sliders.destroy');
+    Route::get('/frontweb/news', [FrontWeb\FrontWebController::class, 'newsIndex'])->name('frontweb.news.index');
+    Route::post('/frontweb/news', [FrontWeb\FrontWebController::class, 'storeNews'])->name('frontweb.news.store');
+    Route::delete('/frontweb/news/{news}', [FrontWeb\FrontWebController::class, 'destroyNews'])->name('frontweb.news.destroy');
+    Route::get('/frontweb/pages', [FrontWeb\FrontWebController::class, 'pagesIndex'])->name('frontweb.pages.index');
 
     // Transcripts
     Route::get('/transcripts', ComingSoonController::class)->name('transcripts.index');

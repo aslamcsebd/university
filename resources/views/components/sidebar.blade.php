@@ -1,9 +1,9 @@
 {{-- Sidebar --}}
 <aside :class="sidebarOpen ? 'w-64' : 'w-16'"
-       class="hidden lg:flex flex-col bg-slate-900 text-white transition-all duration-300 shrink-0 h-screen">
+       class="hidden lg:flex flex-col bg-slate-900 dark:bg-gray-950 text-white transition-all duration-300 shrink-0 h-screen">
 
     {{-- Logo --}}
-    <div class="flex items-center h-16 px-4 border-b border-slate-700 shrink-0">
+    <div class="flex items-center h-16 px-4 border-b border-slate-700 dark:border-gray-800 shrink-0">
         <div class="flex items-center gap-3 overflow-hidden">
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,15 +21,9 @@
     <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-0.5"
          style="scrollbar-width: thin; scrollbar-color: #334155 transparent;">
 
-        {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}"
-           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
-                  {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            <span x-show="sidebarOpen" x-cloak>Dashboard</span>
-        </a>
+        <x-sidebar-item :href="route('dashboard')" icon="home" :active="request()->routeIs('dashboard')">
+            Dashboard
+        </x-sidebar-item>
 
         {{-- Academic --}}
         @include('components.sidebar-group-item', [
@@ -239,17 +233,11 @@
         ])
 
         {{-- Divider --}}
-        <div class="border-t border-slate-700 my-2"></div>
+        <div class="border-t border-slate-700 dark:border-gray-800 my-2"></div>
 
-        {{-- Settings --}}
-        <a href="{{ route('settings.general') }}"
-           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
-                  {{ request()->routeIs('settings.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <span x-show="sidebarOpen" x-cloak>Settings</span>
-        </a>
+        <x-sidebar-item :href="route('settings.general')" icon="cog" :active="request()->routeIs('settings.*')">
+            Settings
+        </x-sidebar-item>
 
         {{-- Users --}}
         <a href="{{ route('users.index') }}"
@@ -284,7 +272,7 @@
     </nav>
 
     {{-- User Footer --}}
-    <div class="border-t border-slate-700 p-3 shrink-0">
+    <div class="border-t border-slate-700 dark:border-gray-800 p-3 shrink-0">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}

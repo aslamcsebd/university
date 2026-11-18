@@ -38,7 +38,7 @@ class RolesPermissionsSeeder extends Seeder
             'view.marks', 'create.marks', 'publish.marks',
             // Results
             'view.results', 'publish.results',
-            // Finance
+            // Finance / Accounting
             'view.fees', 'assign.fees', 'collect.fees',
             'view.payments', 'create.payments',
             'view.scholarships', 'manage.scholarships',
@@ -71,15 +71,73 @@ class RolesPermissionsSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        // Super Admin — all permissions
+        // ── Super Admin ── all permissions
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
         $superAdmin->syncPermissions(Permission::all());
 
-        // Admin — all except super-level
+        // ── Admin ── all except super-level settings
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $admin->syncPermissions(Permission::whereNotIn('name', ['manage.settings'])->get());
 
-        // Academic Admin
+        // ── Student Management ──────────────────────────────────────────────
+        $studentMgmt = Role::firstOrCreate(['name' => 'student_manager', 'guard_name' => 'web']);
+        $studentMgmt->syncPermissions([
+            'view.students', 'create.students', 'edit.students', 'delete.students',
+            'view.academic', 'manage.academic',
+            'view.attendance', 'manage.attendance',
+            'view.marks', 'create.marks',
+            'view.results',
+            'view.study-materials', 'manage.study-materials',
+            'view.transcripts', 'generate.transcripts',
+            'view.fees', 'collect.fees',
+            'view.payments',
+            'view.reports',
+        ]);
+
+        // ── Admission Management ─────────────────────────────────────────────
+        $admissionMgmt = Role::firstOrCreate(['name' => 'admission_manager', 'guard_name' => 'web']);
+        $admissionMgmt->syncPermissions([
+            'view.admissions', 'create.admissions', 'edit.admissions', 'delete.admissions',
+            'view.students', 'create.students', 'edit.students',
+            'view.academic',
+            'view.fees', 'assign.fees', 'collect.fees',
+            'view.payments', 'create.payments',
+            'view.reports',
+        ]);
+
+        // ── Accounting Management ────────────────────────────────────────────
+        $accountingMgmt = Role::firstOrCreate(['name' => 'accounting_manager', 'guard_name' => 'web']);
+        $accountingMgmt->syncPermissions([
+            'view.fees', 'assign.fees', 'collect.fees',
+            'view.payments', 'create.payments',
+            'view.scholarships', 'manage.scholarships',
+            'view.payroll', 'generate.payroll', 'approve.payroll',
+            'view.students',
+            'view.reports', 'export.reports',
+        ]);
+
+        // ── Examination Management ───────────────────────────────────────────
+        $examMgmt = Role::firstOrCreate(['name' => 'examination_manager', 'guard_name' => 'web']);
+        $examMgmt->syncPermissions([
+            'view.exams', 'manage.exams',
+            'view.marks', 'create.marks', 'publish.marks',
+            'view.results', 'publish.results',
+            'view.attendance', 'manage.attendance',
+            'view.academic',
+            'view.students',
+            'view.transcripts', 'generate.transcripts',
+            'view.reports', 'export.reports',
+        ]);
+
+        // ── Library Management ───────────────────────────────────────────────
+        $libraryMgmt = Role::firstOrCreate(['name' => 'library_manager', 'guard_name' => 'web']);
+        $libraryMgmt->syncPermissions([
+            'view.library', 'manage.library',
+            'view.students',
+            'view.reports',
+        ]);
+
+        // ── Legacy / other roles ─────────────────────────────────────────────
         $academicAdmin = Role::firstOrCreate(['name' => 'academic_admin', 'guard_name' => 'web']);
         $academicAdmin->syncPermissions([
             'view.academic', 'manage.academic',
@@ -89,14 +147,6 @@ class RolesPermissionsSeeder extends Seeder
             'view.results', 'publish.results',
         ]);
 
-        // Admission Admin
-        $admissionAdmin = Role::firstOrCreate(['name' => 'admission_admin', 'guard_name' => 'web']);
-        $admissionAdmin->syncPermissions([
-            'view.admissions', 'create.admissions', 'edit.admissions', 'delete.admissions',
-            'view.students', 'create.students', 'edit.students',
-        ]);
-
-        // Finance Admin
         $financeAdmin = Role::firstOrCreate(['name' => 'finance_admin', 'guard_name' => 'web']);
         $financeAdmin->syncPermissions([
             'view.fees', 'assign.fees', 'collect.fees',
@@ -106,7 +156,6 @@ class RolesPermissionsSeeder extends Seeder
             'view.reports', 'export.reports',
         ]);
 
-        // HR Admin
         $hrAdmin = Role::firstOrCreate(['name' => 'hr_admin', 'guard_name' => 'web']);
         $hrAdmin->syncPermissions([
             'view.staff', 'create.staff', 'edit.staff', 'delete.staff',
@@ -114,19 +163,15 @@ class RolesPermissionsSeeder extends Seeder
             'view.payroll', 'generate.payroll',
         ]);
 
-        // Librarian
         $librarian = Role::firstOrCreate(['name' => 'librarian', 'guard_name' => 'web']);
         $librarian->syncPermissions(['view.library', 'manage.library']);
 
-        // Hostel Admin
         $hostelAdmin = Role::firstOrCreate(['name' => 'hostel_admin', 'guard_name' => 'web']);
         $hostelAdmin->syncPermissions(['view.hostel', 'manage.hostel']);
 
-        // Transport Admin
         $transportAdmin = Role::firstOrCreate(['name' => 'transport_admin', 'guard_name' => 'web']);
         $transportAdmin->syncPermissions(['view.transport', 'manage.transport']);
 
-        // Teacher
         $teacher = Role::firstOrCreate(['name' => 'teacher', 'guard_name' => 'web']);
         $teacher->syncPermissions([
             'view.attendance', 'manage.attendance',
@@ -134,13 +179,11 @@ class RolesPermissionsSeeder extends Seeder
             'view.study-materials', 'manage.study-materials',
         ]);
 
-        // Student
         Role::firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
 
-        // Front Desk
         $frontdesk = Role::firstOrCreate(['name' => 'frontdesk', 'guard_name' => 'web']);
         $frontdesk->syncPermissions(['view.frontdesk', 'manage.frontdesk']);
 
-        $this->command->info('Roles and permissions seeded successfully.');
+        $this->command->info('✔  Roles and permissions seeded.');
     }
 }
