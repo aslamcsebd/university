@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="title">Application — {{ $admission->applicant_name }}</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('admissions.index')
         <a href="{{ route('admissions.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Application Details</h1>
     </div>
 
@@ -56,6 +58,7 @@
             </div>
 
             {{-- Update Status --}}
+            @access('admissions.status')
             <div class="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-3">Update Status</h3>
                 <form method="POST" action="{{ route('admissions.status', $admission) }}" class="space-y-3">
@@ -68,16 +71,19 @@
                     <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Update Status</button>
                 </form>
             </div>
+            @endaccess
 
             {{-- Convert to Student --}}
             @if($admission->status?->is_approval_trigger)
             <div class="bg-green-50 border border-green-200 rounded-xl p-5">
                 <h3 class="font-semibold text-green-800 mb-2">Convert to Student</h3>
                 <p class="text-xs text-green-700 mb-3">Application is approved. Convert to create a student account.</p>
+                @access('admissions.convert')
                 <form method="POST" action="{{ route('admissions.convert', $admission) }}" onsubmit="return confirm('Convert this application to a student?')">
                     @csrf
                     <button type="submit" class="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">Convert to Student</button>
                 </form>
+                @endaccess
             </div>
             @endif
         </div>

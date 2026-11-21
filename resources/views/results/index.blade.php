@@ -8,6 +8,7 @@
     <div class="bg-white rounded-xl border border-gray-200 p-5 mb-5">
         <h3 class="font-semibold text-gray-900 mb-3">Actions</h3>
         <div class="flex flex-wrap gap-3">
+            @access('results.process')
             <form method="POST" action="{{ route('results.process') }}" class="flex gap-2">
                 @csrf
                 <select name="semester_id" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -16,6 +17,8 @@
                 </select>
                 <button type="submit" onclick="return confirm('Process results for selected semester?')" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Process Results</button>
             </form>
+            @endaccess
+            @access('results.publish')
             <form method="POST" action="{{ route('results.publish') }}" class="flex gap-2">
                 @csrf
                 <select name="semester_id" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -24,6 +27,7 @@
                 </select>
                 <button type="submit" onclick="return confirm('Publish all results? Students will be able to see them.')" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">Publish Results</button>
             </form>
+            @endaccess
         </div>
     </div>
 

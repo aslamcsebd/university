@@ -33,7 +33,9 @@
                     <td class="px-5 py-3 font-medium text-gray-900">{{ $member->salaryStructure ? number_format($member->salaryStructure->grossSalary(), 2) : '—' }}</td>
                     <td class="px-5 py-3 text-gray-500">{{ $member->salaryStructure?->effective_from?->format('d M Y') ?? '—' }}</td>
                     <td class="px-5 py-3 text-right">
+                        @access('salary.edit')
                         <a href="{{ route('salary.edit', $member) }}" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700">{{ $member->salaryStructure ? 'Edit' : 'Set Salary' }}</a>
+                        @endaccess
                     </td>
                 </tr>
                 @empty

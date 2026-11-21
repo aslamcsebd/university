@@ -50,6 +50,12 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! Auth::user()->is_active || Auth::user()->isLocked()) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages(['email' => 'Your account is inactive or locked.']);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

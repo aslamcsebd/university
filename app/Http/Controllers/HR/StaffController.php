@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use App\Models\WorkShift;
 use App\Models\User;
+use App\Services\AccessManagement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -77,6 +78,7 @@ class StaffController extends Controller
 
         $userId = null;
         if ($request->boolean('create_account') && $request->filled('email')) {
+            app(AccessManagement::class)->validateDefaultRole($request->user(), 'teacher');
             $user   = User::create([
                 'name'              => $validated['first_name'].' '.$validated['last_name'],
                 'email'             => $validated['email'],

@@ -10,17 +10,19 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::updateOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
             [
-                'name'              => 'Super Admin',
-                'password'          => Hash::make('123456789'),
-                'is_active'         => true,
+                'name' => 'Super Admin',
+                'password' => Hash::make('123456789'),
+                'is_active' => true,
                 'email_verified_at' => now(),
             ]
         );
 
-        $admin->assignRole('super_admin');
+        if ($admin->wasRecentlyCreated) {
+            $admin->assignRole('super_admin');
+        }
 
         $this->command->info('Admin user seeded: admin@gmail.com / 123456789');
     }

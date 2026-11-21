@@ -155,8 +155,8 @@ class ProjectStatus extends Command
         $this->line('  <fg=blue>Database Stats</>');
         $stats = [
             'Users'       => \App\Models\User::count(),
-            'Roles'       => \Spatie\Permission\Models\Role::count(),
-            'Permissions' => \Spatie\Permission\Models\Permission::count(),
+            'Roles'       => \App\Models\Role::count(),
+            'Permissions' => \App\Models\Permission::count(),
             'Faculties'   => $this->safeCount('faculties'),
             'Departments' => $this->safeCount('departments'),
             'Programs'    => $this->safeCount('programs'),

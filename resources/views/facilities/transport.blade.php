@@ -2,7 +2,9 @@
     <x-slot name="title">Transport Management</x-slot>
     <div class="mb-6 flex items-center justify-between">
         <div><h1 class="text-2xl font-bold text-gray-900">Transport Management</h1></div>
+        @access('transport.allocations')
         <a href="{{ route('transport.allocations') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Allocations</a>
+        @endaccess
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {{-- Vehicles --}}
@@ -19,6 +21,7 @@
                 </tbody>
             </table>
             <div class="border-t border-gray-100 p-4">
+                @access('transport.vehicles.store')
                 <form method="POST" action="{{ route('transport.vehicles.store') }}" class="grid grid-cols-2 gap-2">
                     @csrf
                     <input type="text" name="plate_no" required placeholder="Plate No" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -26,6 +29,7 @@
                     <input type="number" name="capacity" required min="1" placeholder="Capacity" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button type="submit" class="bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add Vehicle</button>
                 </form>
+                @endaccess
             </div>
         </div>
         {{-- Routes --}}
@@ -42,6 +46,7 @@
                 </tbody>
             </table>
             <div class="border-t border-gray-100 p-4">
+                @access('transport.routes.store')
                 <form method="POST" action="{{ route('transport.routes.store') }}" class="grid grid-cols-2 gap-2">
                     @csrf
                     <input type="text" name="name" required placeholder="Route name" class="col-span-2 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -52,6 +57,7 @@
                     <input type="number" name="fare" placeholder="Fare" min="0" step="0.01" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button type="submit" class="col-span-2 bg-blue-600 text-white rounded-lg text-sm font-medium py-2 hover:bg-blue-700">Add Route</button>
                 </form>
+                @endaccess
             </div>
         </div>
     </div>

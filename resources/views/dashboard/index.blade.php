@@ -9,6 +9,7 @@
 
     {{-- Stats Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        @if($visibleCards['students'])
         <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
             <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +21,9 @@
                 <p class="text-sm text-gray-500">Total Students</p>
             </div>
         </div>
+        @endif
 
+        @if($visibleCards['staff'])
         <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
             <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +35,9 @@
                 <p class="text-sm text-gray-500">Total Staff</p>
             </div>
         </div>
+        @endif
 
+        @if($visibleCards['admissions'])
         <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
             <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +49,9 @@
                 <p class="text-sm text-gray-500">Pending Admissions</p>
             </div>
         </div>
+        @endif
 
+        @if($visibleCards['payments'])
         <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
             <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,16 +63,20 @@
                 <p class="text-sm text-gray-500">Payments Today</p>
             </div>
         </div>
+        @endif
     </div>
 
     {{-- Quick Links Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
+        @if($visibleCards['recent-users'])
         {{-- Recent Users --}}
         <div class="bg-white rounded-xl border border-gray-200">
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h2 class="font-semibold text-gray-900">Recent Users</h2>
+                @access('users.index')
                 <a href="{{ route('users.index') }}" class="text-sm text-blue-600 hover:underline">View all</a>
+                @endaccess
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($recentUsers ?? [] as $user)
@@ -85,14 +96,19 @@
             </div>
         </div>
 
+        @endif
         {{-- System Info --}}
+        @if($visibleCards['system-info'])
         <div class="bg-white rounded-xl border border-gray-200">
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h2 class="font-semibold text-gray-900">System Info</h2>
-                <a href="{{ route('settings.general') }}" class="text-sm text-blue-600 hover:underline">Settings</a>
+                @access('settings.general')
+<a href="{{ route('settings.general') }}" class="text-sm text-blue-600 hover:underline">Settings</a>
+@endaccess
+
             </div>
             <div class="px-5 py-4 space-y-3">
-                @php $uni = \App\Models\University::current(); @endphp
+                @php $uni = $university; @endphp
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">University</span>
                     <span class="font-medium text-gray-900">{{ $uni?->name ?? 'Not configured' }}</span>
@@ -113,16 +129,20 @@
                     <span class="text-gray-500">PHP</span>
                     <span class="font-medium text-gray-900">{{ PHP_VERSION }}</span>
                 </div>
+                @can('view.users')
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Total Users</span>
-                    <span class="font-medium text-gray-900">{{ \App\Models\User::count() }}</span>
+                    <span class="font-medium text-gray-900">{{ $userCount }}</span>
                 </div>
+                @endcan
+                @can('view.roles')
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Total Roles</span>
-                    <span class="font-medium text-gray-900">{{ \Spatie\Permission\Models\Role::count() }}</span>
+                    <span class="font-medium text-gray-900">{{ $roleCount }}</span>
                 </div>
+                @endcan
             </div>
         </div>
-
+        @endif
     </div>
 </x-app-layout>

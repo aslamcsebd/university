@@ -144,4 +144,27 @@ class ExamController extends Controller
 
         return back()->with('success', 'Marks saved successfully.');
     }
+
+    // Admit Cards
+    public function admitCardsIndex(Request $request)
+    {
+        $semester       = Semester::where('is_current', true)->first();
+        $sessionCourses = SessionCourse::with(['course', 'section'])
+            ->whereHas('semester', fn($q) => $q->where('is_current', true))->get();
+
+        $selectedCourse = $request->filled('session_course_id')
+            ? SessionCourse::with(['course', 'section'])->find($request->session_course_id)
+            : null;
+
+        $students = collect();
+        if ($selectedCourse) {
+            $students = StudentEnrollment::where('semester_id', $selectedCourse->semester_id)
+                ->where('status', 'active')
+                ->with('student.program')
+                ->get()
+                ->map(fn($e) => $e->student);
+        }
+
+        return view('examinations.admit-cards', compact('sessionCourses', 'selectedCourse', 'students', 'semester'));
+    }
 }

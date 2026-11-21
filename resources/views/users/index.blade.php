@@ -7,6 +7,7 @@
             <p class="text-sm text-gray-500 mt-1">Manage system users and their roles</p>
         </div>
         @can('create.users')
+        @access('users.create')
         <a href="{{ route('users.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,6 +15,7 @@
             </svg>
             Add User
         </a>
+        @endaccess
         @endcan
     </div>
 
@@ -38,7 +40,9 @@
             </select>
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-700 transition-colors">Filter</button>
             @if(request()->hasAny(['search','role','status']))
+                @access('users.index')
                 <a href="{{ route('users.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">Clear</a>
+                @endaccess
             @endif
         </form>
     </div>
@@ -88,6 +92,7 @@
                     <td class="px-5 py-3 text-gray-500">{{ $user->created_at->format('d M Y') }}</td>
                     <td class="px-5 py-3">
                         <div class="flex items-center justify-end gap-1">
+                            @access('users.show')
                             <a href="{{ route('users.show', $user) }}"
                                class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="View">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,13 +100,17 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
                             </a>
-                            @can('edit.users')
+                            @endaccess
+                            @can('update', $user)
+                            @access('users.edit')
                             <a href="{{ route('users.edit', $user) }}"
                                class="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </a>
+                            @endaccess
+                            @access('users.toggle')
                             <form method="POST" action="{{ route('users.toggle', $user) }}">
                                 @csrf @method('PATCH')
                                 <button type="submit"
@@ -112,9 +121,11 @@
                                     </svg>
                                 </button>
                             </form>
+                            @endaccess
                             @endcan
-                            @can('delete.users')
+                            @can('delete', $user)
                             @if($user->id !== auth()->id())
+                            @access('users.destroy')
                             <form method="POST" action="{{ route('users.destroy', $user) }}"
                                   onsubmit="return confirm('Delete this user?')">
                                 @csrf @method('DELETE')
@@ -125,6 +136,7 @@
                                     </svg>
                                 </button>
                             </form>
+                            @endaccess
                             @endif
                             @endcan
                         </div>

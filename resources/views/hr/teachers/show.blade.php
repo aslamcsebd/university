@@ -1,9 +1,13 @@
 <x-app-layout>
     <x-slot name="title">{{ $teacher->full_name }}</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('teachers.index')
         <a href="{{ route('teachers.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Teacher Profile</h1>
+        @access('teachers.edit')
         <a href="{{ route('teachers.edit', $teacher) }}" class="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Edit</a>
+        @endaccess
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
         <div class="bg-white rounded-xl border border-gray-200 p-5 text-center">

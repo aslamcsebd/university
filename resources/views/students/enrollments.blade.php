@@ -3,10 +3,14 @@
     <div class="flex items-center justify-between mb-6">
         <div><h1 class="text-2xl font-bold text-gray-900">Student Enrollments</h1><p class="text-sm text-gray-500 mt-1">Manage semester enrollments</p></div>
         <div class="flex gap-2">
+            @access('enrollments.bulk')
             <a href="{{ route('enrollments.bulk') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Bulk Enroll</a>
+            @endaccess
+            @access('enrollments.create')
             <a href="{{ route('enrollments.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Enroll Student
             </a>
+            @endaccess
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 p-4 mb-5">
@@ -51,9 +55,11 @@
                     <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full text-xs {{ $enroll->status === 'active' ? 'bg-green-100 text-green-700' : ($enroll->status === 'withdrawn' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700') }}">{{ ucfirst($enroll->status) }}</span></td>
                     <td class="px-5 py-3 text-right">
                         @if($enroll->status === 'active')
+                        @access('enrollments.withdraw')
                         <form method="POST" action="{{ route('enrollments.withdraw', $enroll) }}" onsubmit="return confirm('Withdraw this enrollment?')">@csrf @method('PATCH')
                             <button type="submit" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200">Withdraw</button>
                         </form>
+                        @endaccess
                         @endif
                     </td>
                 </tr>

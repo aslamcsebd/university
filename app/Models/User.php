@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCustomPermissions;
+use App\Models\Concerns\RecordsCreator;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, SoftDeletes, HasRoles, LogsActivity;
+    use HasCustomPermissions, HasFactory, LogsActivity, Notifiable, RecordsCreator, SoftDeletes;
+
+    protected $attributes = ['is_active' => true];
 
     protected $fillable = [
         'name',
@@ -40,13 +43,13 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at'   => 'datetime',
-            'password'            => 'hashed',
-            'is_active'           => 'boolean',
-            'two_fa_enabled'      => 'boolean',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_active' => 'boolean',
+            'two_fa_enabled' => 'boolean',
             'two_fa_confirmed_at' => 'datetime',
-            'last_login_at'       => 'datetime',
-            'locked_until'        => 'datetime',
+            'last_login_at' => 'datetime',
+            'locked_until' => 'datetime',
         ];
     }
 
@@ -67,9 +70,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            return asset('storage/'.$this->avatar);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=1d4ed8&color=fff';
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=1d4ed8&color=fff';
     }
 
     public function loginAudits()

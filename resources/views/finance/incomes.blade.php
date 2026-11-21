@@ -16,6 +16,7 @@
             @if($incomes->hasPages())<div class="px-5 py-4 border-t">{{ $incomes->links() }}</div>@endif
         </div>
         <div class="space-y-5">
+            @access('finance.incomes.store')
             <div class="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-3">Add Income</h3>
                 <form method="POST" action="{{ route('finance.incomes.store') }}" class="space-y-3">
@@ -34,6 +35,8 @@
                     <button type="submit" class="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">Add Income</button>
                 </form>
             </div>
+            @endaccess
+            @access('finance.income-categories.store')
             <div class="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-3">Add Category</h3>
                 <form method="POST" action="{{ route('finance.income-categories.store') }}" class="flex gap-2">
@@ -42,6 +45,7 @@
                     <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Add</button>
                 </form>
             </div>
+            @endaccess
         </div>
     </div>
 </x-app-layout>

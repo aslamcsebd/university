@@ -2,11 +2,14 @@
     <x-slot name="title">Audit Log Details</x-slot>
 
     <div class="flex items-center gap-3 mb-6">
-        <a href="{{ route('audit.index') }}" class="text-gray-400 hover:text-gray-600" aria-label="Back to audit logs">
+        @access('audit.index')
+<a href="{{ route('audit.index') }}" class="text-gray-400 hover:text-gray-600" aria-label="Back to audit logs">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
         </a>
+@endaccess
+
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Audit Log Details</h1>
             <p class="text-sm text-gray-500 mt-1">Activity #{{ $activity->id }}</p>

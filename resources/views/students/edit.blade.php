@@ -1,9 +1,12 @@
 <x-app-layout>
     <x-slot name="title">Edit Student</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('students.show')
         <a href="{{ route('students.show', $student) }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <div><h1 class="text-2xl font-bold text-gray-900">Edit Student</h1><p class="text-sm text-gray-500">{{ $student->student_id }} — {{ $student->full_name }}</p></div>
     </div>
+    @access('students.update')
     <form method="POST" action="{{ route('students.update', $student) }}" enctype="multipart/form-data" class="space-y-5 max-w-4xl">
         @csrf @method('PUT')
         <div class="bg-white rounded-xl border border-gray-200 p-6">
@@ -31,7 +34,10 @@
         </div>
         <div class="flex gap-3">
             <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Update Student</button>
+            @access('students.show')
             <a href="{{ route('students.show', $student) }}" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Cancel</a>
+            @endaccess
         </div>
     </form>
+            @endaccess
 </x-app-layout>

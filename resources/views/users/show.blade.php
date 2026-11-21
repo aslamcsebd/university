@@ -2,11 +2,13 @@
     <x-slot name="title">{{ $user->name }}</x-slot>
 
     <div class="flex items-center gap-3 mb-6">
+        @access('users.index')
         <a href="{{ route('users.index') }}" class="text-gray-400 hover:text-gray-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
         </a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">User Profile</h1>
     </div>
 
@@ -27,15 +29,57 @@
                 {{ $user->is_active ? 'Active' : 'Inactive' }}
             </span>
             <div class="mt-4 flex gap-2 justify-center">
-                <a href="{{ route('users.edit', $user) }}"
+                @can('update', $user)
+@access('users.edit')
+<a href="{{ route('users.edit', $user) }}"
                    class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
                     Edit
                 </a>
+@endaccess
+
+@endcan
             </div>
         </div>
 
         {{-- Details --}}
         <div class="lg:col-span-2 space-y-5">
+            <section class="rounded-xl border border-gray-200 bg-white p-5">
+                <h3 class="mb-3 font-semibold text-gray-900">Effective Permissions</h3>
+                @if($user->isSuperAdmin())<p class="mb-3 text-sm text-purple-700">The system role grants all registered application permissions.</p>@endif
+                @forelse($effectivePermissions->groupBy(fn ($permission) => $permission->category->name) as $category => $permissions)
+                    <div class="mb-3"><h4 class="text-sm font-medium text-gray-800">{{ $category }}</h4>
+                    @foreach($permissions as $permission)
+                        @php
+                            $sources = $user->roles->filter(fn ($role) => $role->permissions->contains('id', $permission->id))->map(fn ($role) => $role->label ?? $role->name)->all();
+                            if ($user->permissions->contains('id', $permission->id)) $sources[] = 'Direct grant';
+                            if ($user->isSuperAdmin()) $sources = ['Super administrator'];
+                            if (!$sources) $sources = ['Assigned role'];
+                        @endphp
+                        <p class="mt-1 text-xs text-gray-600">{{ $permission->label }} <span class="text-gray-400">({{ $permission->name }})</span> — {{ implode(', ', $sources) }}</p>
+                    @endforeach</div>
+                @empty <p class="text-sm text-gray-500">No module permissions assigned.</p> @endforelse
+            </section>
+            @can('assign.roles')
+                @can('update', $user)
+                    @if(!$user->hasRole('super_admin'))
+                        @access('users.permissions')
+<form method="POST" action="{{ route('users.permissions', $user) }}" class="rounded-xl border border-gray-200 bg-white p-5">
+                            @csrf @method('PUT')
+                            <h3 class="mb-2 font-semibold text-gray-900">Direct Permission Exceptions</h3>
+                            <p class="mb-3 text-sm text-gray-500">Role permissions still apply. These selections add access for this user.</p>
+                            @if($errors->any())<p role="alert" class="mb-3 text-sm text-red-600">{{ $errors->first() }}</p>@endif
+                            <div class="grid max-h-80 gap-2 overflow-y-auto sm:grid-cols-2">
+                                @foreach($grantablePermissions as $permission)
+                                    <label class="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" name="permissions[]" value="{{ $permission->name }}" @checked($user->permissions->contains('id', $permission->id)) class="rounded border-gray-300 text-blue-600">{{ $permission->label }}</label>
+                                @endforeach
+                            </div>
+                            <button class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white">Save Direct Permissions</button>
+                        </form>
+@endaccess
+
+                    @endif
+                @endcan
+            @endcan
             <div class="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-4">Account Details</h3>
                 <dl class="grid grid-cols-2 gap-4 text-sm">

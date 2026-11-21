@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 class StudentStatusHistory extends Model
 {
     use HasUuids;
+    protected $table = 'student_status_history';
     public $timestamps = false;
     protected $fillable = ['student_id', 'old_status', 'new_status', 'reason', 'changed_by', 'created_at'];
     protected function casts(): array { return ['created_at' => 'datetime']; }

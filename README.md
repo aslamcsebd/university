@@ -24,6 +24,31 @@ Password: 123456789
 
 ---
 
+## Sync system setup
+
+With PHP, Composer, Node.js and npm installed, run:
+
+```bash
+./deploy.sh
+```
+
+The script creates `.env` if missing, prepares storage permissions, installs
+backend and frontend dependencies, generates a missing application key, runs
+migrations, seeds initial roles/settings/users when there are no users, clears
+Laravel caches, links storage and builds frontend assets. Existing environment
+settings and application keys are preserved. It stops if a command fails.
+
+First setup uses the example's SQLite database. For MySQL, configure `.env` before
+running the script. Start the application afterward with `composer run dev`.
+
+For only the frontend build after code changes:
+
+```bash
+npm run build
+```
+
+---
+
 ## 🗂️ All Sidebar Pages (Top → Bottom)
 
 ### 🏛️ Academic Dashboard Sidebar (`/academic/*`)

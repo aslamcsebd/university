@@ -13,9 +13,11 @@
                     <td class="px-5 py-3 text-red-600 font-medium">{{ $issue->due_date->format('d M Y') }}</td>
                     <td class="px-5 py-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">{{ $issue->due_date->diffInDays(now()) }} days</span></td>
                     <td class="px-5 py-3 text-right">
+                        @access('library.return')
                         <form method="POST" action="{{ route('library.return', $issue) }}">@csrf
                             <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700">Return & Collect Fine</button>
                         </form>
+                        @endaccess
                     </td>
                 </tr>
                 @empty

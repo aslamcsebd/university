@@ -1,28 +1,34 @@
 <?php
 
-use App\Http\Controllers\Library;
-use App\Http\Controllers\Facilities;
-use App\Http\Controllers\Inventory;
-use App\Http\Controllers\Study;
-use App\Http\Controllers\Finance;
-use App\Http\Controllers\Examination;
-use App\Http\Controllers\Admission;
-use App\Http\Controllers\Students;
 use App\Http\Controllers\Academic;
-use App\Http\Controllers\HR;
-use App\Http\Controllers\Payroll;
-use App\Http\Controllers\Communication;
-use App\Http\Controllers\FrontDesk;
-use App\Http\Controllers\Transcripts;
-use App\Http\Controllers\Reports;
-use App\Http\Controllers\FrontWeb;
+use App\Http\Controllers\Admission;
+use App\Http\Controllers\Audit\AuditController;
 use App\Http\Controllers\ComingSoonController;
+use App\Http\Controllers\Communication;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Examination;
+use App\Http\Controllers\Facilities;
+use App\Http\Controllers\Finance;
+use App\Http\Controllers\FrontDesk;
+use App\Http\Controllers\FrontWeb;
+use App\Http\Controllers\HR;
+use App\Http\Controllers\Inventory;
+use App\Http\Controllers\Library;
+use App\Http\Controllers\Payroll;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\Reports;
+use App\Http\Controllers\Roles\PermissionCategoryController;
+use App\Http\Controllers\Roles\PermissionController;
 use App\Http\Controllers\Roles\RoleController;
 use App\Http\Controllers\Settings\GeneralSettingsController;
-use App\Http\Controllers\Audit\AuditController;
+use App\Http\Controllers\Students;
+use App\Http\Controllers\Study;
+use App\Http\Controllers\Transcripts;
+use App\Http\Controllers\Users\UserController;
+use App\Http\Middleware\AuthorizeModule;
+use App\Models\Section;
+use App\Models\Semester;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Root redirect
@@ -31,12 +37,13 @@ Route::get('/', function () {
 });
 
 // Authenticated routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', AuthorizeModule::class])->group(function () {
 
     // Theme toggle
-    Route::post('/theme', function (\Illuminate\Http\Request $request) {
+    Route::post('/theme', function (Request $request) {
         $theme = $request->input('theme') === 'dark' ? 'dark' : 'light';
-        \App\Models\Setting::set('general.theme', $theme);
+        $request->session()->put('theme', $theme);
+
         return response()->json(['ok' => true]);
     })->name('theme.save');
 
@@ -51,28 +58,33 @@ Route::middleware(['auth'])->group(function () {
     // ─── USERS ────────────────────────────────────────────────────────────
     Route::resource('users', UserController::class);
     Route::patch('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle');
+    Route::put('/users/{user}/permissions', [UserController::class, 'permissions'])->name('users.permissions');
 
     // ─── ROLES & PERMISSIONS ──────────────────────────────────────────────
     Route::resource('roles', RoleController::class)->except(['show']);
+    Route::post('/roles/{role}/duplicate', [RoleController::class, 'duplicate'])->name('roles.duplicate');
+
+    Route::resource('permissions', PermissionController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('permission-categories', PermissionCategoryController::class)->only(['store', 'update', 'destroy']);
 
     // ─── SETTINGS ─────────────────────────────────────────────────────────
     Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/general',  [GeneralSettingsController::class, 'index'])->name('general');
-        Route::put('/general',  [GeneralSettingsController::class, 'update'])->name('general.update');
+        Route::get('/general', [GeneralSettingsController::class, 'index'])->name('general');
+        Route::put('/general', [GeneralSettingsController::class, 'update'])->name('general.update');
 
         // Coming soon settings pages
-        Route::get('/states-provinces',    ComingSoonController::class)->name('states');
-        Route::get('/districts-cities',    ComingSoonController::class)->name('districts');
-        Route::get('/mail-setting',        ComingSoonController::class)->name('mail');
-        Route::get('/sms-getaways',        ComingSoonController::class)->name('sms');
-        Route::get('/payment-getaways',    ComingSoonController::class)->name('payment');
-        Route::get('/online-application',  ComingSoonController::class)->name('online-application');
-        Route::get('/student-panel',       ComingSoonController::class)->name('student-panel');
+        Route::get('/states-provinces', ComingSoonController::class)->name('states');
+        Route::get('/districts-cities', ComingSoonController::class)->name('districts');
+        Route::get('/mail-setting', ComingSoonController::class)->name('mail');
+        Route::get('/sms-getaways', ComingSoonController::class)->name('sms');
+        Route::get('/payment-getaways', ComingSoonController::class)->name('payment');
+        Route::get('/online-application', ComingSoonController::class)->name('online-application');
+        Route::get('/student-panel', ComingSoonController::class)->name('student-panel');
     });
 
     // ─── AUDIT LOGS ───────────────────────────────────────────────────────
     Route::prefix('audit')->name('audit.')->group(function () {
-        Route::get('/',      [AuditController::class, 'index'])->name('index');
+        Route::get('/', [AuditController::class, 'index'])->name('index');
         Route::get('/{activity}', [AuditController::class, 'show'])->name('show');
     });
 
@@ -121,9 +133,18 @@ Route::middleware(['auth'])->group(function () {
     // ─── PHASE 4 — ADMISSION & STUDENTS ─────────────────────────────────
 
     // Admission Applications
-    Route::resource('admissions', Admission\AdmissionController::class)->except(['edit', 'update']);
     Route::patch('/admissions/{admission}/status', [Admission\AdmissionController::class, 'updateStatus'])->name('admissions.status');
     Route::post('/admissions/{admission}/convert', [Admission\AdmissionController::class, 'convert'])->name('admissions.convert');
+
+    // Transfer In/Out
+    Route::get('/admissions/transfer', [Admission\AdmissionController::class, 'transferIndex'])->name('admissions.transfer');
+    Route::post('/admissions/transfer', [Admission\AdmissionController::class, 'storeTransfer'])->name('admissions.transfer.store');
+
+    // ID Cards
+    Route::get('/admissions/id-cards', [Admission\AdmissionController::class, 'idCardsIndex'])->name('admissions.id-cards');
+
+    // Literal page paths must precede /admissions/{admission}.
+    Route::resource('admissions', Admission\AdmissionController::class)->except(['edit', 'update']);
 
     // Admission Status Types
     Route::get('/admission-statuses', [Admission\AdmissionStatusController::class, 'index'])->name('admission.statuses.index');
@@ -139,15 +160,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/enrollments', [Students\EnrollmentController::class, 'index'])->name('enrollments.index');
     Route::get('/enrollments/create', [Students\EnrollmentController::class, 'create'])->name('enrollments.create');
     Route::post('/enrollments', [Students\EnrollmentController::class, 'store'])->name('enrollments.store');
-    Route::get('/enrollments/bulk', fn() => view('students.bulk-enroll', [
-        'semesters' => \App\Models\Semester::with('academicSession')->orderByDesc('created_at')->get(),
-        'sections'  => \App\Models\Section::with('batch')->orderBy('name')->get(),
+    Route::get('/enrollments/bulk', fn () => view('students.bulk-enroll', [
+        'semesters' => Semester::with('academicSession')->orderByDesc('created_at')->get(),
+        'sections' => Section::with('batch')->orderBy('name')->get(),
     ]))->name('enrollments.bulk');
     Route::post('/enrollments/bulk', [Students\EnrollmentController::class, 'bulkEnroll'])->name('enrollments.bulk-store');
     Route::patch('/enrollments/{enrollment}/withdraw', [Students\EnrollmentController::class, 'withdraw'])->name('enrollments.withdraw');
 
     // Leave (student)
     Route::get('/leave', ComingSoonController::class)->name('leave.index');
+
+    // Alumni
+    Route::get('/alumni', [Students\StudentController::class, 'alumniIndex'])->name('alumni.index');
 
     // ─── PHASE 5 — ACADEMIC OPERATIONS ──────────────────────────────────
 
@@ -170,7 +194,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/exam-schedules/{examSchedule}', [Academic\ExamScheduleController::class, 'destroy'])->name('exam-schedules.destroy');
 
     // Timetable view
-    Route::get('/timetable', fn() => redirect()->route('schedules.index'))->name('timetable.index');
+    Route::get('/timetable', fn () => redirect()->route('schedules.index'))->name('timetable.index');
 
     // Student Attendance
     Route::get('/attendance/students', [Examination\AttendanceController::class, 'studentsIndex'])->name('attendance.students.index');
@@ -195,10 +219,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/marks', [Examination\ExamController::class, 'marksIndex'])->name('marks.index');
     Route::post('/marks', [Examination\ExamController::class, 'saveMarks'])->name('marks.save');
 
+    // Admit Cards
+    Route::get('/admit-cards', [Examination\ExamController::class, 'admitCardsIndex'])->name('admit-cards.index');
+
     // Results
     Route::get('/results', [Examination\ResultController::class, 'index'])->name('results.index');
     Route::post('/results/process', [Examination\ResultController::class, 'process'])->name('results.process');
     Route::post('/results/publish', [Examination\ResultController::class, 'publish'])->name('results.publish');
+
+    // Mark Ledger
+    Route::get('/mark-ledger', [Examination\ResultController::class, 'markLedger'])->name('mark-ledger.index');
 
     // ─── PHASE 3 — HR, TEACHERS & PAYROLL ────────────────────────────────
 
@@ -233,7 +263,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/staff-leave/{application}/reject', [HR\LeaveController::class, 'reject'])->name('staff-leave.reject');
 
     // HR Overview
-    Route::get('/hr', fn() => redirect()->route('staff.index'))->name('hr.index');
+    Route::get('/hr', fn () => redirect()->route('staff.index'))->name('hr.index');
 
     // Salary Structures
     Route::get('/salary', [Payroll\SalaryController::class, 'index'])->name('salary.index');
@@ -384,20 +414,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/frontweb/news/{news}', [FrontWeb\FrontWebController::class, 'destroyNews'])->name('frontweb.news.destroy');
     Route::get('/frontweb/pages', [FrontWeb\FrontWebController::class, 'pagesIndex'])->name('frontweb.pages.index');
 
-    // Transcripts
-    Route::get('/transcripts', ComingSoonController::class)->name('transcripts.index');
-
-    // Reports
-    Route::get('/reports', ComingSoonController::class)->name('reports.index');
-
-    // Communication
-    Route::get('/notices', ComingSoonController::class)->name('notices.index');
-    Route::get('/events', ComingSoonController::class)->name('events.index');
-
-    // Front Website
-    Route::get('/frontweb/pages', ComingSoonController::class)->name('frontweb.pages.index');
-    Route::get('/frontweb/news', ComingSoonController::class)->name('frontweb.news.index');
-    Route::get('/frontweb/sliders', ComingSoonController::class)->name('frontweb.sliders.index');
+    // NOTE: duplicate ComingSoon stubs removed — real controllers above handle these routes.
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -37,7 +37,9 @@
     </div>
     @else
     <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 text-sm text-yellow-800">
-        No current academic session set. <a href="{{ route('sessions.create') }}" class="font-medium underline">Create one →</a>
+        No current academic session set. @access('sessions.create')
+<a href="{{ route('sessions.create') }}" class="font-medium underline">Create one →</a>
+@endaccess
     </div>
     @endif
 
@@ -59,14 +61,18 @@
                 <span>{{ $faculty->programs_count }} Programs</span>
             </div>
             <div class="mt-3 flex gap-2">
+                @access('departments.index')
                 <a href="{{ route('departments.index', ['faculty' => $faculty->id]) }}"
                    class="text-xs text-blue-600 hover:underline">View Departments →</a>
+                @endaccess
             </div>
         </div>
         @empty
         <div class="col-span-3 bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
             No faculties yet.
+            @access('faculties.create')
             <a href="{{ route('faculties.create') }}" class="text-blue-600 hover:underline ml-1">Create the first faculty →</a>
+            @endaccess
         </div>
         @endforelse
     </div>

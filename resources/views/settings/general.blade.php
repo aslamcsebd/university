@@ -7,6 +7,7 @@
     </div>
 
     <div class="max-w-3xl">
+        @access('settings.general.update')
         <form method="POST" action="{{ route('settings.general.update') }}" enctype="multipart/form-data"
               class="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
             @csrf @method('PUT')
@@ -111,5 +112,6 @@
                 </button>
             </div>
         </form>
+        @endaccess
     </div>
 </x-app-layout>

@@ -14,7 +14,10 @@
                 @foreach($leaveTypes as $lt)<option value="{{ $lt->id }}" {{ request('leave_type')==$lt->id?'selected':'' }}>{{ $lt->name }}</option>@endforeach
             </select>
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm">Filter</button>
-            @if(request()->hasAny(['status','leave_type']))<a href="{{ route('staff-leave.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Clear</a>@endif
+            @if(request()->hasAny(['status','leave_type']))@access('staff-leave.index')
+<a href="{{ route('staff-leave.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Clear</a>
+@endaccess
+@endif
         </form>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -45,12 +48,16 @@
                     <td class="px-5 py-3 text-right">
                         @if($app->status === 'pending')
                         <div class="flex items-center justify-end gap-1">
+                            @access('staff-leave.approve')
                             <form method="POST" action="{{ route('staff-leave.approve', $app) }}">@csrf
                                 <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">Approve</button>
                             </form>
+                            @endaccess
+                            @access('staff-leave.reject')
                             <form method="POST" action="{{ route('staff-leave.reject', $app) }}">@csrf
                                 <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-lg text-xs hover:bg-red-700">Reject</button>
                             </form>
+                            @endaccess
                         </div>
                         @else
                         <span class="text-xs text-gray-400">{{ $app->reviewed_at?->format('d M Y') }}</span>

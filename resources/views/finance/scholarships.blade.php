@@ -5,7 +5,9 @@
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="font-semibold text-gray-900">All Scholarships</h2>
+                @access('scholarships.applications')
                 <a href="{{ route('scholarships.applications') }}" class="text-xs text-blue-600 hover:underline">View Applications →</a>
+                @endaccess
             </div>
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b border-gray-100"><tr><th class="text-left px-5 py-2 font-medium text-gray-600">Name</th><th class="text-left px-5 py-2 font-medium text-gray-600">Type</th><th class="text-left px-5 py-2 font-medium text-gray-600">Value</th><th class="text-left px-5 py-2 font-medium text-gray-600">Apps</th><th class="text-right px-5 py-2 font-medium text-gray-600">Del</th></tr></thead>
@@ -17,9 +19,11 @@
                         <td class="px-5 py-2 text-gray-700">{{ $s->value_type=='percentage' ? $s->value.'%' : number_format($s->value,2) }}</td>
                         <td class="px-5 py-2 text-gray-500">{{ $s->applications_count }}</td>
                         <td class="px-5 py-2 text-right">
+                            @access('scholarships.destroy')
                             <form method="POST" action="{{ route('scholarships.destroy', $s) }}" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                 <button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                             </form>
+                            @endaccess
                         </td>
                     </tr>
                     @empty
@@ -28,6 +32,7 @@
                 </tbody>
             </table>
         </div>
+        @access('scholarships.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h2 class="font-semibold text-gray-900 mb-4">Create Scholarship</h2>
             <form method="POST" action="{{ route('scholarships.store') }}" class="space-y-3">
@@ -60,5 +65,6 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Create Scholarship</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

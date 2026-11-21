@@ -1,11 +1,14 @@
 <x-app-layout>
     <x-slot name="title">Enroll Student</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('enrollments.index')
         <a href="{{ route('enrollments.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Enroll Student</h1>
     </div>
     <div class="max-w-2xl space-y-5">
         {{-- Single Enrollment --}}
+        @access('enrollments.store')
         <div class="bg-white rounded-xl border border-gray-200 p-6">
             <h3 class="font-semibold text-gray-900 mb-4">Single Student Enrollment</h3>
             <form method="POST" action="{{ route('enrollments.store') }}" class="space-y-4">
@@ -31,5 +34,6 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Enroll Student</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

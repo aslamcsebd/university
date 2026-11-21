@@ -15,13 +15,21 @@
                         <td class="px-5 py-2 text-gray-500">{{ $d->staff_count }}</td>
                         <td class="px-5 py-2 text-right">
                             <div class="flex items-center justify-end gap-1">
-                                <button onclick="document.getElementById('edit-{{ $d->id }}').classList.toggle('hidden')" class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                                @access('designations.update')
+<button onclick="document.getElementById('edit-{{ $d->id }}').classList.toggle('hidden')" class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+@endaccess
+
+                                @access('designations.destroy')
                                 <form method="POST" action="{{ route('designations.destroy', $d) }}" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></form>
+                                @endaccess
                             </div>
-                            <form id="edit-{{ $d->id }}" method="POST" action="{{ route('designations.update', $d) }}" class="hidden mt-2 flex gap-2">@csrf @method('PUT')
+                            @access('designations.update')
+<form id="edit-{{ $d->id }}" method="POST" action="{{ route('designations.update', $d) }}" class="hidden mt-2 flex gap-2">@csrf @method('PUT')
                                 <input type="text" name="name" value="{{ $d->name }}" required class="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <button type="submit" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs">Save</button>
                             </form>
+@endaccess
+
                         </td>
                     </tr>
                     @empty
@@ -32,6 +40,7 @@
             @if($designations->hasPages())<div class="px-5 py-3 border-t">{{ $designations->links() }}</div>@endif
         </div>
         {{-- Add Form --}}
+        @access('designations.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h2 class="font-semibold text-gray-900 mb-4">Add Designation</h2>
             <form method="POST" action="{{ route('designations.store') }}" class="space-y-3">
@@ -41,5 +50,6 @@
                 <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add Designation</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

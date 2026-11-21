@@ -52,12 +52,14 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-right">
+                        @access('library.return')
                         <form method="POST" action="{{ route('library.return', $issue) }}" onsubmit="return confirm('Process return?')">
                             @csrf
                             <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700">
                                 Return
                             </button>
                         </form>
+                        @endaccess
                     </td>
                 </tr>
                 @empty

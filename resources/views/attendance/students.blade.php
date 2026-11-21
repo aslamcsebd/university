@@ -16,6 +16,7 @@
             </form>
         </div>
         <div class="lg:col-span-2" id="attendancePanel" style="display:none">
+            @access('attendance.students.mark')
             <form method="POST" action="{{ route('attendance.students.mark') }}" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 @csrf
                 <input type="hidden" name="session_course_id" id="hiddenCourse">
@@ -32,6 +33,7 @@
                     <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Save Attendance</button>
                 </div>
             </form>
+            @endaccess
         </div>
     </div>
     @push('scripts')

@@ -27,6 +27,7 @@
                             <span class="px-2 py-0.5 rounded-full text-xs {{ $sc[$e->status]??'' }}">{{ ucfirst(str_replace('_',' ',$e->status)) }}</span>
                         </td>
                         <td class="px-5 py-3 text-right">
+                            @access('enquiries.status')
                             <form method="POST" action="{{ route('enquiries.status', $e) }}" class="flex gap-1 justify-end">@csrf @method('PATCH')
                                 <select name="status" onchange="this.form.submit()" class="border border-gray-200 rounded px-2 py-1 text-xs">
                                     <option value="new" {{ $e->status=='new'?'selected':'' }}>New</option>
@@ -35,6 +36,7 @@
                                     <option value="closed" {{ $e->status=='closed'?'selected':'' }}>Closed</option>
                                 </select>
                             </form>
+                            @endaccess
                         </td>
                     </tr>
                     @empty
@@ -44,6 +46,7 @@
             </table>
             @if($enquiries->hasPages())<div class="px-5 py-4 border-t">{{ $enquiries->links() }}</div>@endif
         </div>
+        @access('enquiries.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Log Enquiry</h3>
             <form method="POST" action="{{ route('enquiries.store') }}" class="space-y-3">
@@ -67,5 +70,6 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Log Enquiry</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

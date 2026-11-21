@@ -21,9 +21,11 @@
     <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-0.5"
          style="scrollbar-width: thin; scrollbar-color: #334155 transparent;">
 
+        @access('dashboard')
         <x-sidebar-item :href="route('dashboard')" icon="home" :active="request()->routeIs('dashboard')">
             Dashboard
         </x-sidebar-item>
+        @endaccess
 
         {{-- Academic --}}
         @include('components.sidebar-group-item', [
@@ -52,21 +54,21 @@
                 ['label'=>'Applications',     'route'=>'admissions.index'],
                 ['label'=>'New Registration', 'route'=>'admissions.create'],
                 ['label'=>'Student List',     'route'=>'students.index'],
-                ['label'=>'Transfer In/Out',  'route'=>'admissions.index'],
-                ['label'=>'ID Cards',         'route'=>'admissions.index'],
+                ['label'=>'Transfer In/Out',  'route'=>'admissions.transfer'],
+                ['label'=>'ID Cards',         'route'=>'admissions.id-cards'],
             ]
         ])
 
         {{-- Students --}}
         @include('components.sidebar-group-item', [
             'label'  => 'Students',
-            'active' => request()->routeIs('enrollments.*','attendance.students.*','leave.*'),
+            'active' => request()->routeIs('enrollments.*','attendance.students.*','leave.*','alumni.*'),
             'icon'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>',
             'items'  => [
                 ['label'=>'Enrollments',      'route'=>'enrollments.index'],
                 ['label'=>'Attendance',       'route'=>'attendance.students.index'],
                 ['label'=>'Leave Management', 'route'=>'leave.index'],
-                ['label'=>'Alumni',           'route'=>'enrollments.index'],
+                ['label'=>'Alumni',           'route'=>'alumni.index'],
             ]
         ])
 
@@ -85,15 +87,15 @@
         {{-- Examinations --}}
         @include('components.sidebar-group-item', [
             'label'  => 'Examinations',
-            'active' => request()->routeIs('exam-types.*','mark-distributions.*','marks.*','results.*','grading.*'),
+            'active' => request()->routeIs('exam-types.*','mark-distributions.*','marks.*','admit-cards.*','results.*','mark-ledger.*','grading.*'),
             'icon'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>',
             'items'  => [
                 ['label'=>'Exam Types',       'route'=>'exam-types.index'],
                 ['label'=>'Mark Distribution','route'=>'mark-distributions.index'],
                 ['label'=>'Mark Entry',       'route'=>'marks.index'],
-                ['label'=>'Admit Cards',      'route'=>'marks.index'],
+                ['label'=>'Admit Cards',      'route'=>'admit-cards.index'],
                 ['label'=>'Process Results',  'route'=>'results.index'],
-                ['label'=>'Mark Ledger',      'route'=>'results.index'],
+                ['label'=>'Mark Ledger',      'route'=>'mark-ledger.index'],
                 ['label'=>'Grading System',   'route'=>'grading.index'],
             ]
         ])
@@ -240,6 +242,7 @@
         </x-sidebar-item>
 
         {{-- Users --}}
+        @access('users.index')
         <a href="{{ route('users.index') }}"
            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
                   {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
@@ -248,8 +251,10 @@
             </svg>
             <span x-show="sidebarOpen" x-cloak>Users</span>
         </a>
+        @endaccess
 
         {{-- Roles & Permissions --}}
+        @access('roles.index')
         <a href="{{ route('roles.index') }}"
            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
                   {{ request()->routeIs('roles.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
@@ -258,9 +263,11 @@
             </svg>
             <span x-show="sidebarOpen" x-cloak>Roles & Permissions</span>
         </a>
+        @endaccess
 
         {{-- Audit Logs --}}
-        <a href="{{ route('audit.index') }}"
+        @access('audit.index')
+<a href="{{ route('audit.index') }}"
            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
                   {{ request()->routeIs('audit.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,6 +275,9 @@
             </svg>
             <span x-show="sidebarOpen" x-cloak>Audit Logs</span>
         </a>
+@endaccess
+
+
 
     </nav>
 

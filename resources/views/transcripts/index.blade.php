@@ -13,7 +13,9 @@
                         <td class="px-5 py-2"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">{{ ucfirst($doc->document_type) }}</span>@if($doc->is_duplicate)<span class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs">Duplicate</span>@endif</td>
                         <td class="px-5 py-2 font-mono text-xs text-gray-600">{{ $doc->certificate_no }}</td>
                         <td class="px-5 py-2 text-gray-500">{{ $doc->generated_at->format('d M Y') }}</td>
-                        <td class="px-5 py-2 text-right"><a href="{{ route('transcripts.show', $doc) }}" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">View</a></td>
+                        <td class="px-5 py-2 text-right">@access('transcripts.show')
+<a href="{{ route('transcripts.show', $doc) }}" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">View</a>
+@endaccess</td>
                     </tr>
                     @empty
                     <tr><td colspan="5" class="px-5 py-8 text-center text-gray-400">No documents yet.</td></tr>
@@ -22,6 +24,7 @@
             </table>
             @if($documents->hasPages())<div class="px-5 py-4 border-t">{{ $documents->links() }}</div>@endif
         </div>
+        @access('transcripts.generate')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Generate Document</h3>
             <form method="POST" action="{{ route('transcripts.generate') }}" class="space-y-3">
@@ -49,5 +52,6 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Generate</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

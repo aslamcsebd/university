@@ -1,9 +1,13 @@
 <x-app-layout>
     <x-slot name="title">{{ $staff->full_name }}</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('staff.index')
         <a href="{{ route('staff.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Staff Profile</h1>
+        @access('staff.edit')
         <a href="{{ route('staff.edit', $staff) }}" class="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Edit</a>
+        @endaccess
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
         {{-- Profile Card --}}
@@ -35,7 +39,9 @@
             <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="font-semibold text-gray-900">Recent Payrolls</h3>
+                    @access('payroll.index')
                     <a href="{{ route('payroll.index') }}" class="text-xs text-blue-600 hover:underline">View all →</a>
+                    @endaccess
                 </div>
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50"><tr><th class="text-left px-5 py-2 font-medium text-gray-600">Month</th><th class="text-left px-5 py-2 font-medium text-gray-600">Gross</th><th class="text-left px-5 py-2 font-medium text-gray-600">Net</th><th class="text-left px-5 py-2 font-medium text-gray-600">Status</th></tr></thead>

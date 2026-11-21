@@ -13,6 +13,7 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        @access('library.issue')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Issue a Book</h3>
             <form method="POST" action="{{ route('library.issue') }}" class="space-y-4">
@@ -38,6 +39,7 @@
                 <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Issue Book</button>
             </form>
         </div>
+        @endaccess
 
         <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-100">

@@ -1,9 +1,13 @@
 <x-app-layout>
     <x-slot name="title">{{ $student->full_name }}</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('students.index')
         <a href="{{ route('students.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Student Profile</h1>
+        @access('students.edit')
         <a href="{{ route('students.edit', $student) }}" class="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Edit</a>
+        @endaccess
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
@@ -73,11 +77,13 @@
                     <p class="text-xs text-gray-400 mt-1">{{ $note->creator?->name }} — {{ $note->created_at->format('d M Y H:i') }}</p>
                 </div>
                 @empty<p class="text-sm text-gray-400">No notes.</p>@endforelse
+                @access('students.notes.store')
                 <form method="POST" action="{{ route('students.notes.store', $student) }}" class="mt-3 flex gap-2">
                     @csrf
                     <input type="text" name="note" placeholder="Add a note..." required class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Add</button>
                 </form>
+                @endaccess
             </div>
         </div>
     </div>

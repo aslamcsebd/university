@@ -10,9 +10,11 @@
         <h1 class="text-2xl font-bold text-gray-900 mb-2">Coming Soon</h1>
         <p class="text-gray-500 mb-1">This module is under development.</p>
         <p class="text-sm text-blue-600 font-medium mb-6">{{ $module }}</p>
+        @access('dashboard')
         <a href="{{ route('dashboard') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
             ← Back to Dashboard
         </a>
+        @endaccess
     </div>
 </x-app-layout>

@@ -1,11 +1,14 @@
 <x-app-layout>
     <x-slot name="title">Assign Fee</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('fee-assignments.index')
         <a href="{{ route('fee-assignments.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">Assign Fee</h1>
     </div>
     <div class="max-w-3xl space-y-5">
         {{-- Single Assignment --}}
+        @access('fee-assignments.store')
         <div class="bg-white rounded-xl border border-gray-200 p-6">
             <h3 class="font-semibold text-gray-900 mb-4">Single Student</h3>
             <form method="POST" action="{{ route('fee-assignments.store') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -33,7 +36,9 @@
                 <div class="sm:col-span-2 flex justify-end"><button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Assign Fee</button></div>
             </form>
         </div>
+        @endaccess
         {{-- Bulk Assignment --}}
+        @access('fee-assignments.bulk')
         <div class="bg-white rounded-xl border border-gray-200 p-6">
             <h3 class="font-semibold text-gray-900 mb-4">Bulk — Assign to Entire Batch</h3>
             <form method="POST" action="{{ route('fee-assignments.bulk') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -55,5 +60,6 @@
                 <div class="sm:col-span-2 flex justify-end"><button type="submit" onclick="return confirm('Assign fee to all active students in this batch?')" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Bulk Assign</button></div>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

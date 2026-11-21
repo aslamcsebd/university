@@ -138,4 +138,21 @@ class ResultController extends Controller
             );
         }
     }
+
+    // Mark Ledger
+    public function markLedger(Request $request)
+    {
+        $semester = $request->filled('semester_id')
+            ? Semester::find($request->semester_id)
+            : Semester::where('is_current', true)->first();
+
+        $results = StudentResult::with(['student', 'sessionCourse.course', 'gradeRule'])
+            ->where('semester_id', $semester?->id)
+            ->orderBy('student_id')
+            ->paginate(50)->withQueryString();
+
+        $semesters = Semester::with('academicSession')->orderByDesc('created_at')->get();
+
+        return view('examinations.exam-mark-ledger', compact('results', 'semesters', 'semester'));
+    }
 }

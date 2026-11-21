@@ -13,6 +13,7 @@
         @csrf
     </form>
 
+    @access('profile.update')
     <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
@@ -61,4 +62,5 @@
             @endif
         </div>
     </form>
+    @endaccess
 </section>

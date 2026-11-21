@@ -26,6 +26,7 @@
         {{-- Mark Entry Table --}}
         <div class="lg:col-span-3">
             @if($selectedDistribution && $students->count())
+            @access('marks.save')
             <form method="POST" action="{{ route('marks.save') }}" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 @csrf
                 <input type="hidden" name="distribution_id" value="{{ $selectedDistribution->id }}">
@@ -50,6 +51,7 @@
                     <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Save Marks</button>
                 </div>
             </form>
+            @endaccess
             @else
             <div class="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
                 @if(!$selectedCourse) Select a course to begin mark entry.

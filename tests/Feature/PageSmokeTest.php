@@ -13,14 +13,15 @@ use App\Models\Faculty;
 use App\Models\GradingSystem;
 use App\Models\Hostel;
 use App\Models\Program;
+use App\Models\Role;
 use App\Models\Room;
 use App\Models\Staff;
 use App\Models\Student;
 use App\Models\User;
+use Database\Seeders\CustomAuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
 
@@ -55,7 +56,10 @@ class PageSmokeTest extends TestCase
 
     public function test_all_non_parameterized_get_pages_do_not_have_server_errors(): void
     {
-        $this->actingAs(User::factory()->create());
+        $this->seed(CustomAuthorizationSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('super_admin');
+        $this->actingAs($user);
         $this->withExceptionHandling();
 
         $uris = collect(Route::getRoutes())
@@ -73,7 +77,9 @@ class PageSmokeTest extends TestCase
 
     public function test_all_parameterized_get_pages_are_reachable_with_valid_records(): void
     {
+        $this->seed(CustomAuthorizationSeeder::class);
         $user = User::factory()->create();
+        $user->assignRole('super_admin');
         $this->actingAs($user);
         $this->withExceptionHandling();
 

@@ -9,6 +9,7 @@ use App\Models\StudentStatusHistory;
 use App\Models\Program;
 use App\Models\Batch;
 use App\Models\User;
+use App\Services\AccessManagement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -72,6 +73,7 @@ class StudentController extends Controller
 
         $userId = null;
         if ($request->filled('email_account')) {
+            app(AccessManagement::class)->validateDefaultRole($request->user(), 'student');
             $user = User::create([
                 'name'              => $validated['first_name'].' '.$validated['last_name'],
                 'email'             => $validated['email_account'],
@@ -179,5 +181,24 @@ class StudentController extends Controller
             'created_by' => auth()->id(),
         ]);
         return back()->with('success', 'Note added.');
+    }
+
+    public function alumniIndex(Request $request)
+    {
+        $query = Student::with(['program', 'batch'])->where('is_active', false)->latest();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('first_name', 'like', '%'.$request->search.'%')
+                  ->orWhere('last_name', 'like', '%'.$request->search.'%')
+                  ->orWhere('student_id', 'like', '%'.$request->search.'%');
+            });
+        }
+        if ($request->filled('program')) { $query->where('program_id', $request->program); }
+
+        $students = $query->paginate(20)->withQueryString();
+        $programs = Program::where('is_active', true)->orderBy('name')->get();
+
+        return view('students.alumni-list', compact('students', 'programs'));
     }
 }

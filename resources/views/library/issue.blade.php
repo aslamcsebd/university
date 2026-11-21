@@ -2,6 +2,7 @@
     <x-slot name="title">Issue / Return Books</x-slot>
     <div class="mb-6"><h1 class="text-2xl font-bold text-gray-900">Issue & Return Books</h1></div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        @access('library.issue.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Issue Book</h3>
             <form method="POST" action="{{ route('library.issue.store') }}" class="space-y-3">
@@ -22,6 +23,7 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Issue Book</button>
             </form>
         </div>
+        @endaccess
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100"><h3 class="font-semibold text-gray-900">Recent Issues</h3></div>
             <table class="w-full text-sm">
@@ -35,9 +37,11 @@
                         <td class="px-4 py-2"><span class="px-1.5 py-0.5 rounded-full text-xs {{ $issue->status==='issued'?'bg-blue-100 text-blue-700':($issue->status==='returned'?'bg-green-100 text-green-700':'bg-red-100 text-red-700') }}">{{ ucfirst($issue->status) }}</span></td>
                         <td class="px-4 py-2 text-right">
                             @if($issue->status==='issued')
+                            @access('library.return')
                             <form method="POST" action="{{ route('library.return', $issue) }}">@csrf
                                 <button type="submit" class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700">Return</button>
                             </form>
+                            @endaccess
                             @endif
                         </td>
                     </tr>

@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {{-- Inject theme before CSS loads to prevent flash --}}
-    <script>(function(){ if('{{ \App\Models\Setting::get('general.theme', 'light') }}' === 'dark') document.documentElement.classList.add('dark'); })()</script>
+    <script>(function(){ if('{{ session('theme', \App\Models\Setting::get('general.theme', 'light')) }}' === 'dark') document.documentElement.classList.add('dark'); })()</script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -29,7 +29,7 @@
             <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-6">
 
                 {{-- Flash Messages --}}
-                @if(session('success'))
+                @if(session('success') && !request()->routeIs('roles.index'))
                     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
                          class="mb-4 flex items-center gap-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-300 px-4 py-3 rounded-lg">
                         <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">

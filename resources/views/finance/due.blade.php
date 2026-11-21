@@ -14,7 +14,9 @@
                     <td class="px-5 py-3 text-gray-500">{{ $a->due_date?->format('d M Y') }}</td>
                     <td class="px-5 py-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs">{{ $a->due_date?->diffInDays(now()) }} days</span></td>
                     <td class="px-5 py-3 text-right">
+                        @access('payments.create')
                         <a href="{{ route('payments.create', ['assignment' => $a->id]) }}" class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Collect</a>
+                        @endaccess
                     </td>
                 </tr>
                 @empty

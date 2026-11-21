@@ -12,6 +12,31 @@ use Illuminate\Http\Request;
 
 class AdmissionController extends Controller
 {
+    public function transferIndex(Request $request)
+    {
+        $students = \App\Models\Student::with('program')
+            ->where('status', 'transferred')
+            ->latest()
+            ->paginate(20);
+
+        return view('admission.transfer-in', compact('students'));
+    }
+
+    public function storeTransfer(Request $request)
+    {
+        // Placeholder: transfer logic can be extended here
+        return back()->with('success', 'Transfer recorded.');
+    }
+
+    public function idCardsIndex(Request $request)
+    {
+        $students = \App\Models\Student::with('program')->active()
+            ->latest()
+            ->paginate(50);
+
+        return view('admission.id-cards', compact('students'));
+    }
+
     public function index(Request $request)
     {
         $query = AdmissionApplication::with(['program', 'status', 'academicSession'])->latest();

@@ -135,7 +135,7 @@ class LibraryController extends Controller
     public function overdueIndex()
     {
         $overdue = BookIssue::with(['book','member'])
-            ->where('status', 'issued')->where('due_date', '<', now())->get();
+            ->whereIn('status', ['issued', 'overdue'])->where('due_date', '<', now())->get();
         // Update status
         BookIssue::where('status','issued')->where('due_date','<',now())->update(['status'=>'overdue']);
         return view('library.overdue', compact('overdue'));

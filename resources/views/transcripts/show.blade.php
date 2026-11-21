@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="title">{{ ucfirst($document->document_type) }}</x-slot>
     <div class="flex items-center gap-3 mb-6">
+        @access('transcripts.index')
         <a href="{{ route('transcripts.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">{{ ucfirst($document->document_type) }}</h1>
         <span class="font-mono text-sm text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ $document->certificate_no }}</span>
     </div>

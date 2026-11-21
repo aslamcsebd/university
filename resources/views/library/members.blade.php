@@ -2,7 +2,9 @@
     <x-slot name="title">Library Members</x-slot>
     <div class="mb-6 flex items-center justify-between">
         <div><h1 class="text-2xl font-bold text-gray-900">Library Members</h1></div>
+        @access('library.index')
         <a href="{{ route('library.index') }}" class="text-gray-400 hover:text-gray-600 text-sm">← Books</a>
+        @endaccess
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -24,6 +26,7 @@
             </table>
             @if($members->hasPages())<div class="px-5 py-4 border-t">{{ $members->links() }}</div>@endif
         </div>
+        @access('library.members.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Add Member</h3>
             <form method="POST" action="{{ route('library.members.store') }}" class="space-y-3">
@@ -46,6 +49,7 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add Member</button>
             </form>
         </div>
+        @endaccess
     </div>
     @push('scripts')
     <script>

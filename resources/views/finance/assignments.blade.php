@@ -3,10 +3,14 @@
     <div class="flex items-center justify-between mb-6">
         <div><h1 class="text-2xl font-bold text-gray-900">Fee Assignments</h1><p class="text-sm text-gray-500 mt-1">Manage student fee assignments</p></div>
         <div class="flex gap-2">
+            @access('fee-assignments.due')
             <a href="{{ route('fee-assignments.due') }}" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50">Overdue Fees</a>
+            @endaccess
+            @access('fee-assignments.create')
             <a href="{{ route('fee-assignments.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Assign Fee
             </a>
+            @endaccess
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 p-4 mb-5">
@@ -24,7 +28,10 @@
                 @foreach($feeTypes as $ft)<option value="{{ $ft->id }}" {{ request('fee_type')==$ft->id?'selected':'' }}>{{ $ft->name }}</option>@endforeach
             </select>
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm">Filter</button>
-            @if(request()->hasAny(['search','status','fee_type']))<a href="{{ route('fee-assignments.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Clear</a>@endif
+            @if(request()->hasAny(['search','status','fee_type']))@access('fee-assignments.index')
+<a href="{{ route('fee-assignments.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Clear</a>
+            @endaccess
+@endif
         </form>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -46,16 +53,22 @@
                     <td class="px-5 py-3 text-right">
                         @if(in_array($a->status,['pending','partial']))
                         <div class="flex items-center justify-end gap-1">
+                            @access('payments.create')
                             <a href="{{ route('payments.create', ['assignment' => $a->id]) }}" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Collect</a>
+                            @endaccess
+                            @access('fee-assignments.waive')
                             <form method="POST" action="{{ route('fee-assignments.waive', $a) }}">@csrf
                                 <button type="submit" onclick="return confirm('Waive this fee?')" class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200">Waive</button>
                             </form>
+                            @endaccess
                         </div>
                         @endif
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="px-5 py-12 text-center text-gray-400">No fee assignments. <a href="{{ route('fee-assignments.create') }}" class="text-blue-600">Assign one →</a></td></tr>
+                <tr><td colspan="8" class="px-5 py-12 text-center text-gray-400">No fee assignments. @access('fee-assignments.create')
+<a href="{{ route('fee-assignments.create') }}" class="text-blue-600">Assign one →</a>
+@endaccess</td></tr>
                 @endforelse
             </tbody>
         </table>

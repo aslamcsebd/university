@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="title">News</x-slot>
     <div class="mb-6 flex items-center gap-3">
+        @access('frontweb.pages.index')
         <a href="{{ route('frontweb.pages.index') }}" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></a>
+        @endaccess
         <h1 class="text-2xl font-bold text-gray-900">News Articles</h1>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -14,7 +16,9 @@
                         <td class="px-5 py-3 font-medium text-gray-900">{{ Str::limit($n->title,50) }}</td>
                         <td class="px-5 py-3 text-gray-500">{{ $n->published_at?->format('d M Y') ?? '—' }}</td>
                         <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full text-xs {{ $n->is_published?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700' }}">{{ $n->is_published?'Published':'Draft' }}</span></td>
-                        <td class="px-5 py-3 text-right"><form method="POST" action="{{ route('frontweb.news.destroy', $n) }}" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button type="submit" class="p-1 text-gray-400 hover:text-red-600 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></form></td>
+                        <td class="px-5 py-3 text-right">@access('frontweb.news.destroy')
+<form method="POST" action="{{ route('frontweb.news.destroy', $n) }}" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button type="submit" class="p-1 text-gray-400 hover:text-red-600 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></form>
+@endaccess</td>
                     </tr>
                     @empty
                     <tr><td colspan="4" class="px-5 py-10 text-center text-gray-400">No news articles yet.</td></tr>
@@ -23,6 +27,7 @@
             </table>
             @if($news->hasPages())<div class="px-5 py-4 border-t">{{ $news->links() }}</div>@endif
         </div>
+        @access('frontweb.news.store')
         <div class="bg-white rounded-xl border border-gray-200 p-5">
             <h3 class="font-semibold text-gray-900 mb-4">Write Article</h3>
             <form method="POST" action="{{ route('frontweb.news.store') }}" class="space-y-3">
@@ -33,5 +38,6 @@
                 <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Save Article</button>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

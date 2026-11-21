@@ -61,6 +61,7 @@
     </div>
 
     <div id="add-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        @access('library.members.store')
         <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
             <h3 class="font-bold text-gray-900 mb-4">Add Staff Member</h3>
             <form method="POST" action="{{ route('library.members.store') }}" class="space-y-3">
@@ -96,5 +97,6 @@
                 </div>
             </form>
         </div>
+        @endaccess
     </div>
 </x-app-layout>

@@ -1,8 +1,10 @@
 @php
+    $items = array_values(array_filter($items, fn ($item) => \App\Support\PermissionCatalog::canVisit(auth()->user(), $item['route'])));
     $isActive = $active ?? false;
     $groupKey = 'sidebar_' . \Illuminate\Support\Str::slug($label);
 @endphp
 
+@if(count($items))
 <div x-data="{ open: {{ $isActive ? 'true' : 'false' }} }">
 
     {{-- Group Header --}}
@@ -38,3 +40,4 @@
         @endforeach
     </div>
 </div>
+@endif

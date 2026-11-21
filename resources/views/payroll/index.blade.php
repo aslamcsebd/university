@@ -5,6 +5,7 @@
     </div>
 
     {{-- Generate Form --}}
+    @access('payroll.generate')
     <div class="bg-white rounded-xl border border-gray-200 p-5 mb-5">
         <h3 class="font-semibold text-gray-900 mb-3">Generate Payroll</h3>
         <form method="POST" action="{{ route('payroll.generate') }}" class="flex flex-wrap gap-3 items-end">
@@ -26,6 +27,7 @@
             </button>
         </form>
     </div>
+    @endaccess
 
     {{-- Filter --}}
     <div class="bg-white rounded-xl border border-gray-200 p-4 mb-5">
@@ -80,16 +82,22 @@
                     <td class="px-5 py-3 text-right">
                         <div class="flex items-center justify-end gap-1">
                             @if($payroll->status === 'draft')
+                                @access('payroll.approve')
                                 <form method="POST" action="{{ route('payroll.approve', $payroll) }}">@csrf
                                     <button type="submit" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Approve</button>
                                 </form>
+                                @endaccess
+                                @access('payroll.destroy')
                                 <form method="POST" action="{{ route('payroll.destroy', $payroll) }}" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                     <button type="submit" class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                                 </form>
+                                @endaccess
                             @elseif($payroll->status === 'approved')
+                                @access('payroll.paid')
                                 <form method="POST" action="{{ route('payroll.paid', $payroll) }}">@csrf
                                     <button type="submit" class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700">Mark Paid</button>
                                 </form>
+                                @endaccess
                             @else
                                 <span class="text-xs text-gray-400">{{ $payroll->paid_at?->format('d M Y') }}</span>
                             @endif

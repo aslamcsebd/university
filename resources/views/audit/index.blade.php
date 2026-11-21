@@ -24,7 +24,10 @@
                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-700 transition-colors">Filter</button>
             @if(request()->hasAny(['search','event','date_from','date_to']))
-                <a href="{{ route('audit.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">Clear</a>
+                @access('audit.index')
+<a href="{{ route('audit.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">Clear</a>
+@endaccess
+
             @endif
         </form>
     </div>

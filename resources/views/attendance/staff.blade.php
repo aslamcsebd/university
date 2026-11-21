@@ -7,6 +7,7 @@
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm">View</button>
         </form>
     </div>
+    @access('attendance.staff.mark')
     <form method="POST" action="{{ route('attendance.staff.mark') }}" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         @csrf
         <input type="hidden" name="date" value="{{ $date }}">
@@ -43,4 +44,5 @@
         </div>
         @endif
     </form>
+    @endaccess
 </x-app-layout>

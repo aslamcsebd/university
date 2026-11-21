@@ -14,50 +14,51 @@ class DepartmentUserSeeder extends Seeder
 
         $users = [
             [
-                'name'  => 'Student Manager',
+                'name' => 'Student Manager',
                 'email' => 'student@university.com',
-                'role'  => 'student_manager',
-                'dept'  => 'Student Management',
+                'role' => 'student_manager',
+                'dept' => 'Student Management',
             ],
             [
-                'name'  => 'Admission Manager',
+                'name' => 'Admission Manager',
                 'email' => 'admission@university.com',
-                'role'  => 'admission_manager',
-                'dept'  => 'Admission Management',
+                'role' => 'admission_manager',
+                'dept' => 'Admission Management',
             ],
             [
-                'name'  => 'Accounting Manager',
+                'name' => 'Accounting Manager',
                 'email' => 'accounting@university.com',
-                'role'  => 'accounting_manager',
-                'dept'  => 'Accounting Management',
+                'role' => 'accounting_manager',
+                'dept' => 'Accounting Management',
             ],
             [
-                'name'  => 'Examination Manager',
+                'name' => 'Examination Manager',
                 'email' => 'examination@university.com',
-                'role'  => 'examination_manager',
-                'dept'  => 'Examination Management',
+                'role' => 'examination_manager',
+                'dept' => 'Examination Management',
             ],
             [
-                'name'  => 'Library Manager',
+                'name' => 'Library Manager',
                 'email' => 'library@university.com',
-                'role'  => 'library_manager',
-                'dept'  => 'Library Management',
+                'role' => 'library_manager',
+                'dept' => 'Library Management',
             ],
         ];
 
         foreach ($users as $data) {
-            $user = User::updateOrCreate(
+            $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
-                    'name'              => $data['name'],
-                    'password'          => $password,
-                    'is_active'         => true,
+                    'name' => $data['name'],
+                    'password' => $password,
+                    'is_active' => true,
                     'email_verified_at' => now(),
                 ]
             );
 
-            // Remove any old roles and assign the correct one
-            $user->syncRoles([$data['role']]);
+            if ($user->wasRecentlyCreated) {
+                $user->assignRole($data['role']);
+            }
 
             $this->command->info("✔  {$data['dept']} user: {$data['email']} / Aa@123456  [{$data['role']}]");
         }
